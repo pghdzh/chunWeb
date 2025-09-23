@@ -58,12 +58,12 @@ const navbarRef = ref<HTMLElement | null>(null);
 
 const links = [
   { name: "首页", path: "/" },
-  { name: "设定笔记", path: "/timeLine" },
-  { name: "寄语心声", path: "/message" },
-  { name: "水晶画廊", path: "/gallery" },
-  { name: "i珂TV", path: "/resources" },
-  { name: "小游戏", path: "/game" },
-  { name: "语音馆", path: "/voice" },
+  { name: "椿的盛放", path: "/timeLine" },
+  { name: "写给椿", path: "/message" },
+  { name: "盛放画廊", path: "/gallery" },
+  { name: "资源分享", path: "/resources" },
+  // { name: "小游戏", path: "/game" },
+  // { name: "语音馆", path: "/voice" },
 ];
 
 const handleScroll = () => {

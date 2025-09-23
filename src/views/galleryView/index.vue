@@ -9,9 +9,20 @@
         </button>
       </div>
       <div class="gallery-grid">
-        <div v-for="(img, index) in images" :key="img.id" class="card" @click="openLightbox(index)" ref="cards">
+        <div
+          v-for="(img, index) in images"
+          :key="img.id"
+          class="card"
+          @click="openLightbox(index)"
+          ref="cards"
+        >
           <div class="card-inner">
-            <img :src="img.src" :alt="img.alt" loading="lazy" @load="onImageLoad($event)" />
+            <img
+              :src="img.src"
+              :alt="img.alt"
+              loading="lazy"
+              @load="onImageLoad($event)"
+            />
             <div class="overlay">
               <span>查看大图</span>
             </div>
@@ -35,7 +46,12 @@
       </div>
       <transition name="fade">
         <ul v-if="expanded" class="ranking-list">
-          <li v-for="(item, idx) in rankingList" :key="idx" class="ranking-item" :class="`rank-${idx + 1}`">
+          <li
+            v-for="(item, idx) in rankingList"
+            :key="idx"
+            class="ranking-item"
+            :class="`rank-${idx + 1}`"
+          >
             <span class="rank">{{ idx + 1 }}</span>
             <span class="name">{{ item.nickname }}</span>
             <span class="count">{{ item.count }} 张</span>
@@ -52,12 +68,18 @@
     </div>
 
     <!-- 上传弹窗 -->
-    <div v-if="uploadModalOpen" class="upload-modal-overlay" @click.self="closeUploadModal">
+    <div
+      v-if="uploadModalOpen"
+      class="upload-modal-overlay"
+      @click.self="closeUploadModal"
+    >
       <div class="upload-modal">
         <h3>批量上传图片</h3>
         <div class="tip-container">
           <ul class="tips-list">
-            <li>审核规则：1.不要 AI 图 2.不要色情倾向 3.要我能认出是珂莱塔。</li>
+            <li>
+              审核规则：1.不要 AI 图 2.不要色情倾向 3.要我能认出是珂莱塔。
+            </li>
             <li>
               由于没有用户系统，我这边不好做审核反馈，但只要显示上传成功，我这边肯定能收到。
             </li>
@@ -76,7 +98,13 @@
         </label>
         <label>
           选择图片（最多 {{ remaining }} 张）：
-          <input ref="fileInput" type="file" multiple accept="image/*" @change="handleFileSelect" />
+          <input
+            ref="fileInput"
+            type="file"
+            multiple
+            accept="image/*"
+            @change="handleFileSelect"
+          />
         </label>
         <p class="tip" v-if="selectedFiles.length">
           已选 {{ selectedFiles.length }} 张
@@ -91,8 +119,13 @@
     </div>
 
     <div class="floating-chibis">
-      <img v-for="(pet, i) in chibiList" :key="i" :src="pet.src" :style="{ top: pet.top + 'px', left: pet.left + 'px' }"
-        class="chibi-img" />
+      <img
+        v-for="(pet, i) in chibiList"
+        :key="i"
+        :src="pet.src"
+        :style="{ top: pet.top + 'px', left: pet.left + 'px' }"
+        class="chibi-img"
+      />
     </div>
   </div>
 </template>
@@ -585,95 +618,79 @@ $neon-pink: #ff66c4;
       margin: 16px 0;
 
       .sort-btn {
-        /* 基础布局 */
+        /* 基础布局（保留左侧装饰空间） */
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 10px 28px 10px 48px;
-        /* 留出左侧装饰空间 */
+        padding: 10px 28px 10px 56px; /* 左侧留足装饰空间 */
         font-size: 1rem;
         line-height: 1;
-        font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+        font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
+          sans-serif;
         cursor: pointer;
         border-radius: 28px;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(160, 139, 126, 0.14);
+        border: 1px solid rgba(158, 24, 32, 0.08);
 
-        /* 颜色与质感（奶油 + 淡粉）*/
-        background: linear-gradient(90deg, $ice-blue 0%, $neon-pink 100%);
-        color: #5b463f;
-        /* 暗棕色，保证文字可读性 */
+        /* 红椿渐变与文字色（写死） */
+        background: linear-gradient(
+          90deg,
+          #ffdfdf 0%,
+          #ff7b90 50%,
+          #9e1820 100%
+        );
+        color: #3b1618; /* 暗红/棕，保证可读 */
+        box-shadow: 0 8px 20px rgba(158, 24, 32, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
 
-        /* 柔和阴影，带一点内阴影显得像纸片 */
-        box-shadow: 0 8px 20px rgba(100, 80, 70, 0.08),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.25, 1),
+          box-shadow 0.22s ease, background 0.28s ease, color 0.18s;
 
-        transition: transform 0.18s ease, box-shadow 0.22s ease,
-          background 0.28s ease, color 0.18s;
-
-        /* 左侧小心形 / 装饰 */
-        &::before {
-          content: "❤";
-          position: absolute;
-          left: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 28px;
-          height: 28px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          font-size: 12px;
-          line-height: 1;
-          color: #f31a07;
-          background: linear-gradient(90deg, $ice-blue 0%, $neon-pink 100%);
-          box-shadow: 0 3px 8px rgba(168, 108, 102, 0.12);
-          pointer-events: none;
-        }
-
-        /* 轻柔高光（hover 时显现）*/
+        /* 在徽章中心叠加一个小花瓣形状（简化） */
         &::after {
           content: "";
           position: absolute;
-          left: -30%;
-          top: -40%;
-          width: 160%;
-          height: 120%;
-          background: linear-gradient(120deg,
-              rgba(255, 255, 255, 0.36),
-              rgba(255, 255, 255, 0.02));
-          transform: rotate(18deg);
-          opacity: 0;
-          transition: opacity 0.45s ease, transform 0.45s ease;
+          left: 22px;
+          top: 50%;
+          transform: translate(-50%, -52%) rotate(-12deg);
+          width: 18px;
+          height: 18px;
+          background: radial-gradient(
+              8px 6px at 30% 30%,
+              rgba(255, 255, 255, 0.9),
+              transparent 35%
+            ),
+            linear-gradient(
+              180deg,
+              rgba(255, 122, 134, 0.95),
+              rgba(158, 24, 32, 0.95)
+            );
+          clip-path: polygon(50% 0%, 68% 24%, 50% 100%, 32% 24%);
+          border-radius: 4px;
+          box-shadow: 0 2px 6px rgba(158, 24, 32, 0.12);
           pointer-events: none;
+          z-index: 3;
+          transition: transform 220ms ease, opacity 220ms ease;
         }
 
-        /* hover 效果：微微抬起，颜色变暖，光泽出现 */
+        /* hover：微抬起，颜色加深，高光出现 */
         &:hover {
           transform: translateY(-4px);
-          box-shadow: 0 14px 34px rgba(168, 108, 102, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+          box-shadow: 0 14px 36px rgba(158, 24, 32, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+          background: linear-gradient(
+            90deg,
+            #ffd6da 0%,
+            #ff6a82 50%,
+            #8b141c 100%
+          );
+          color: #ffffff;
         }
 
         &:hover::after {
+          transform: translate(-50%, -60%) rotate(-6deg) scale(1.02);
           opacity: 1;
-          transform: rotate(18deg) translateY(6px);
-        }
-
-        /* active（按下）手感 */
-        &:active {
-          transform: translateY(-1px) scale(0.995);
-          box-shadow: 0 6px 14px rgba(100, 80, 70, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        /* 键盘聚焦可见性（可访问） */
-        &:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 4px rgba(255, 223, 228, 0.28),
-            0 8px 22px rgba(100, 80, 70, 0.08);
         }
       }
     }
@@ -693,7 +710,6 @@ $neon-pink: #ff66c4;
         }
 
         &.loaded {
-
           // Blur-up & grayscale removed
           .card-inner img {
             filter: none;
@@ -884,96 +900,50 @@ $neon-pink: #ff66c4;
   .upload-btn {
     /* 位置与布局保持不变 */
     position: fixed;
-    bottom: 24px;
+    bottom: 64px;
     right: 24px;
     display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 12px 18px;
     font-size: 1rem;
-    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
+      sans-serif;
     z-index: 10;
     cursor: pointer;
     user-select: none;
 
-    /* 主视觉：冰蓝 -> 霓虹粉 渐变（横向），文字白色 */
+    /* 文本与主渐变（红椿专用） */
     color: #ffffff;
-    background: linear-gradient(90deg, $ice-blue 0%, $neon-pink 100%);
+    background: linear-gradient(90deg, #ffb3b9 0%, #ff4f4f 55%, #9e1820 100%);
     border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow:
-      0 14px 36px rgba(180, 90, 130, 0.12),
-      /* 柔和投影 */
-      0 0 28px rgba($neon-pink, 0.08);
-    /* 霓虹轻光（CSS 变量插值会被编译） */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    /* 阴影（柔和 + 椿色光晕） */
+    box-shadow: 0 14px 36px rgba(184, 58, 74, 0.12),
+      /* 主体柔和投影（暖红） */ 0 0 28px rgba(255, 79, 79, 0.08); /* 霓虹晕光（猩红） */
+
     overflow: visible;
-    transition: transform 200ms cubic-bezier(.2, .9, .25, 1), box-shadow 200ms ease, background 220ms ease;
-
-    /* 左侧金属徽章改为冰蓝小圆点（视觉锚点） */
-    &::before {
-      content: "";
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      margin-left: 2px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #ffffff 0%, rgba(255, 255, 255, 0.6) 10%, $ice-blue 40%, $neon-pink 100%);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 4px 10px rgba(140, 110, 140, 0.08);
-      transform: translateY(-1px);
-      flex: 0 0 auto;
-      pointer-events: none;
-    }
-
-    /* 柔光层（增加立体感与霓虹感） */
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(300px 80px at 20% 20%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 25%, transparent 40%);
-      pointer-events: none;
-      transition: opacity 240ms ease, transform 240ms ease;
-      opacity: 0.7;
-    }
+    transition: transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1),
+      box-shadow 200ms ease, background 220ms ease;
 
     /* hover：微抬起、霓虹更强 */
     &:hover {
       transform: translateY(-6px) scale(1.02);
-      background: linear-gradient(90deg, $ice-blue 0%, $neon-pink 100%);
-      box-shadow:
-        0 26px 54px rgba(170, 80, 120, 0.16),
-        0 0 36px rgba($neon-pink, 0.16);
+      box-shadow: 0 26px 54px rgba(170, 60, 70, 0.16),
+        0 0 36px rgba(255, 79, 79, 0.16);
     }
-
-    &:hover::after {
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-
-    /* active：按下回弹 */
-    &:active {
-      transform: translateY(-2px) scale(0.995);
-      box-shadow: 0 10px 26px rgba(140, 70, 100, 0.10);
-    }
-
-    /* 键盘聚焦（无障碍） */
-    &:focus-visible {
-      outline: none;
-      box-shadow:
-        0 20px 46px rgba(160, 80, 120, 0.12),
-        0 0 0 6px rgba(255, 102, 196, 0.12);
-      /* neon-pink 的发光环 */
-    }
-
-
   }
 
   /* 上传弹窗：冰蓝 + 霓虹粉 珂莱塔风格 */
   .upload-modal-overlay {
     position: fixed;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 10, 12, 0.65), rgba(8, 10, 12, 0.5));
+    background: linear-gradient(
+      180deg,
+      rgba(8, 10, 12, 0.65),
+      rgba(8, 10, 12, 0.5)
+    );
     /* 深色半透明底让弹窗更突出 */
     backdrop-filter: blur(8px) saturate(1.06);
     display: flex;
@@ -984,14 +954,17 @@ $neon-pink: #ff66c4;
 
   /* 弹窗主体 */
   .upload-modal {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 250, 255, 0.98));
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(245, 250, 255, 0.98)
+    );
     padding: 36px;
     border-radius: 18px;
     width: 660px;
     color: #17333a;
     /* 深海蓝文本，兼具可读性 */
-    box-shadow:
-      0 18px 48px rgba(20, 30, 40, 0.45),
+    box-shadow: 0 18px 48px rgba(20, 30, 40, 0.45),
       0 6px 20px rgba($neon-pink, 0.06);
     border: 1px solid rgba(190, 230, 250, 0.18);
     position: relative;
@@ -1004,7 +977,11 @@ $neon-pink: #ff66c4;
       position: absolute;
       inset: -2px;
       border-radius: 20px;
-      background: linear-gradient(90deg, rgba($ice-blue, 0.18), rgba($neon-pink, 0.12));
+      background: linear-gradient(
+        90deg,
+        rgba($ice-blue, 0.18),
+        rgba($neon-pink, 0.12)
+      );
       filter: blur(18px);
       opacity: 0.9;
       pointer-events: none;
@@ -1019,8 +996,7 @@ $neon-pink: #ff66c4;
       font-weight: 800;
       letter-spacing: 0.6px;
       /* 双色内发光，显得科技而梦幻 */
-      text-shadow:
-        0 0 10px rgba($ice-blue, 0.6),
+      text-shadow: 0 0 10px rgba($ice-blue, 0.6),
         0 0 22px rgba($neon-pink, 0.18);
     }
 
@@ -1037,7 +1013,11 @@ $neon-pink: #ff66c4;
     .tip-container {
       margin-top: 20px;
       padding: 14px 18px;
-      background: linear-gradient(180deg, rgba($ice-blue, 0.06), rgba($neon-pink, 0.03));
+      background: linear-gradient(
+        180deg,
+        rgba($ice-blue, 0.06),
+        rgba($neon-pink, 0.03)
+      );
       border-left: 4px solid rgba($neon-pink, 0.18);
       border-radius: 10px;
       backdrop-filter: blur(4px);
@@ -1063,7 +1043,13 @@ $neon-pink: #ff66c4;
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%, #fff 0%, rgba(255, 255, 255, 0.5) 10%, $ice-blue 40%, $neon-pink 100%);
+            background: radial-gradient(
+              circle at 35% 30%,
+              #fff 0%,
+              rgba(255, 255, 255, 0.5) 10%,
+              $ice-blue 40%,
+              $neon-pink 100%
+            );
             box-shadow: 0 4px 10px rgba($neon-pink, 0.12);
           }
 
@@ -1094,7 +1080,11 @@ $neon-pink: #ff66c4;
         padding: 10px 12px;
         border-radius: 10px;
         border: 1px solid rgba(30, 120, 140, 0.08);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba($ice-blue, 0.03));
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.98),
+          rgba($ice-blue, 0.03)
+        );
         color: #142f32;
         font-size: 0.95rem;
         outline: none;
@@ -1102,7 +1092,8 @@ $neon-pink: #ff66c4;
 
         &:focus {
           border-color: $neon-pink;
-          box-shadow: 0 6px 20px rgba($neon-pink, 0.08), 0 2px 8px rgba($ice-blue, 0.06);
+          box-shadow: 0 6px 20px rgba($neon-pink, 0.08),
+            0 2px 8px rgba($ice-blue, 0.06);
           transform: translateY(-1px);
         }
       }
@@ -1121,27 +1112,35 @@ $neon-pink: #ff66c4;
         cursor: pointer;
         font-weight: 700;
         font-size: 0.95rem;
-        transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.12s;
+        transition: background 0.22s ease, box-shadow 0.22s ease,
+          transform 0.12s;
         min-width: 96px;
 
         &:not(.cancel) {
           /* 主按钮：霓虹粉为主，冰蓝高光 */
           color: #fff;
-          background: linear-gradient(135deg, $neon-pink 0%, color.mix($neon-pink, $ice-blue, $weight: 30%) 60%, $ice-blue 100%);
-          box-shadow:
-            0 10px 28px rgba($neon-pink, 0.18),
+          background: linear-gradient(
+            135deg,
+            $neon-pink 0%,
+            color.mix($neon-pink, $ice-blue, $weight: 30%) 60%,
+            $ice-blue 100%
+          );
+          box-shadow: 0 10px 28px rgba($neon-pink, 0.18),
             0 2px 10px rgba($ice-blue, 0.06);
         }
 
         &:not(.cancel):hover:not(:disabled) {
           transform: translateY(-4px);
-          box-shadow:
-            0 18px 46px rgba($neon-pink, 0.22),
+          box-shadow: 0 18px 46px rgba($neon-pink, 0.22),
             0 6px 18px rgba($ice-blue, 0.08);
         }
 
         &:not(.cancel):disabled {
-          background: linear-gradient(135deg, rgba($neon-pink, 0.18), rgba($ice-blue, 0.18));
+          background: linear-gradient(
+            135deg,
+            rgba($neon-pink, 0.18),
+            rgba($ice-blue, 0.18)
+          );
           opacity: 0.6;
           cursor: not-allowed;
           box-shadow: none;
@@ -1163,17 +1162,25 @@ $neon-pink: #ff66c4;
   .ranking-panel {
     width: 220px;
     padding: 16px;
-    background: linear-gradient(160deg, rgba($ice-blue, 0.85), rgba($neon-pink, 0.85));
-    backdrop-filter: blur(10px);
+    /* 红椿渐变毛玻璃面板（写死颜色） */
+    background: linear-gradient(
+      160deg,
+      rgba(255, 238, 241, 0.88),
+      rgba(255, 232, 234, 0.84)
+    );
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
     border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 26px rgba(130, 80, 160, 0.18),
+    border: 1px solid rgba(158, 24, 32, 0.08);
+    box-shadow: 0 10px 30px rgba(158, 24, 32, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
     position: fixed;
     top: 84px;
     right: 12px;
     color: #ffffff;
-    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
+      sans-serif;
+    z-index: 1200;
 
     &.collapsed {
       height: auto;
@@ -1185,23 +1192,31 @@ $neon-pink: #ff66c4;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+      gap: 8px;
 
       .ranking-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #ffffff;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #9e1820; /* 深椿红 */
         font-family: "Zhi Mang Xing", "STKaiti", serif;
-        text-shadow: 0 0 6px rgba($ice-blue, 0.6),
-          0 0 10px rgba($neon-pink, 0.5);
         margin: 0;
+        /* 轻微外发光，提升质感 */
+        text-shadow: 0 2px 12px rgba(158, 24, 32, 0.08);
       }
 
       .toggle-icon {
         font-size: 1rem;
-        color: #ffffff;
+        color: #9e1820;
         user-select: none;
-        text-shadow: 0 0 6px rgba($ice-blue, 0.6),
-          0 0 10px rgba($neon-pink, 0.5);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 243, 244, 0.9),
+          rgba(255, 238, 239, 0.8)
+        );
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(158, 24, 32, 0.06);
+        box-shadow: 0 6px 14px rgba(158, 24, 32, 0.04);
       }
     }
 
@@ -1217,63 +1232,132 @@ $neon-pink: #ff66c4;
         align-items: center;
         justify-content: space-between;
         padding: 8px 10px;
-        margin-bottom: 6px;
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        transition: background 0.3s, box-shadow 0.3s, color 0.3s;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 248, 249, 0.95)
+        );
+        border: 1px solid rgba(245, 235, 238, 0.7);
+        transition: transform 240ms cubic-bezier(0.2, 0.9, 0.25, 1),
+          background 240ms ease, box-shadow 240ms ease, color 200ms ease;
+        will-change: transform;
 
         &:hover {
-          background: linear-gradient(90deg, rgba($ice-blue, 0.25), rgba($neon-pink, 0.25));
-          box-shadow: 0 0 12px rgba($neon-pink, 0.4);
+          transform: translateY(-4px);
+          background: linear-gradient(
+            90deg,
+            rgba(255, 240, 242, 0.98),
+            rgba(255, 230, 232, 0.98)
+          );
+          box-shadow: 0 10px 30px rgba(158, 24, 32, 0.06);
         }
 
         .rank {
-          width: 28px;
+          width: 36px;
           text-align: center;
-          font-weight: bold;
-          font-size: 0.95rem;
-          color: $neon-pink;
-          text-shadow: 0 0 6px rgba($neon-pink, 0.5);
+          font-weight: 900;
+          font-size: 1rem;
+          color: #b82d3b; /* 鲜明红 */
+          text-shadow: 0 2px 8px rgba(184, 58, 74, 0.12);
         }
 
         .name {
           flex: 1;
           padding: 0 8px;
-          font-size: 0.9rem;
-          color: #ffffff;
-          text-shadow: 0 0 4px rgba($ice-blue, 0.6);
+          font-size: 0.95rem;
+          color: #4b1a20;
+          font-weight: 700;
+          white-space: normal; // 允许换行
+          word-break: break-word; // 长单词/连续字符也能断开
+          line-height: 1.3; // 行高适配换行
         }
 
         .count {
-          font-size: 0.85rem;
-          color: $ice-blue;
-          font-weight: bold;
-          text-shadow: 0 0 6px rgba($ice-blue, 0.5);
+          font-size: 0.9rem;
+          color: #9e1820;
+          font-weight: 800;
+          text-shadow: 0 2px 8px rgba(158, 24, 32, 0.06);
+          min-width: 36px;
+          text-align: right;
         }
 
-        /* 前三名用更强渐变高光 */
+        /* ---- 前三名强化样式 ---- */
         &.rank-1 {
-          background: linear-gradient(135deg, $ice-blue, $neon-pink);
-          box-shadow: 0 0 12px rgba($neon-pink, 0.5), 0 0 8px rgba($ice-blue, 0.5);
+          background: linear-gradient(
+            135deg,
+            #ffb3b9 0%,
+            #ff4f4f 60%,
+            #9e1820 100%
+          );
+          color: #fff;
+          box-shadow: 0 10px 36px rgba(158, 24, 32, 0.14),
+            0 0 18px rgba(255, 79, 79, 0.08);
+          border: 1px solid #9e1820;
+
+          .rank {
+            color: #fff;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+          }
+          .name {
+            color: #fff;
+          }
+          .count {
+            color: #fff;
+          }
         }
 
         &.rank-2 {
-          background: linear-gradient(135deg, color.scale($ice-blue, $lightness: 15%), color.scale($neon-pink, $lightness: 15%));
-          box-shadow: 0 0 10px rgba($neon-pink, 0.4), 0 0 6px rgba($ice-blue, 0.4);
+          background: linear-gradient(
+            135deg,
+            #ffd6da 0%,
+            #ff7b90 60%,
+            #8b141c 100%
+          );
+          color: #fff;
+          box-shadow: 0 8px 28px rgba(158, 24, 32, 0.12);
+          border: 1px solid #8b141c;
+
+          .rank {
+            color: #fff;
+          }
+          .name {
+            color: #fff;
+          }
+          .count {
+            color: #fff;
+          }
         }
 
         &.rank-3 {
-          background: linear-gradient(135deg, color.scale($ice-blue, $lightness: 30%), color.scale($neon-pink, $lightness: 30%));
-          box-shadow: 0 0 8px rgba($neon-pink, 0.3), 0 0 6px rgba($ice-blue, 0.3);
+          background: linear-gradient(
+            135deg,
+            #ffecec 0%,
+            #ff9aa6 60%,
+            #7a1318 100%
+          );
+          color: #fff;
+          box-shadow: 0 6px 22px rgba(158, 24, 32, 0.1);
+          border: 1px solid #7a1318;
+
+          .rank {
+            color: #fff;
+          }
+          .name {
+            color: #fff;
+          }
+          .count {
+            color: #fff;
+          }
         }
       }
     }
 
-    /* 淡入淡出动画 */
+    /* 淡入淡出动画（保留） */
     .fade-enter-active,
     .fade-leave-active {
-      transition: opacity 0.3s ease;
+      transition: opacity 0.28s ease;
     }
 
     .fade-enter-from,
