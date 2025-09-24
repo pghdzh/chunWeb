@@ -48,7 +48,7 @@
 import { ref, onMounted, onBeforeUnmount, onUnmounted } from "vue";
 import { io } from "socket.io-client";
 
-const siteId = "klt";
+const siteId = "chun";
 const onlineCount = ref<number | null>(null);
 const socket = io("http://1.94.189.79:3000", { query: { siteId } });
 

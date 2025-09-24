@@ -9,20 +9,9 @@
         </button>
       </div>
       <div class="gallery-grid">
-        <div
-          v-for="(img, index) in images"
-          :key="img.id"
-          class="card"
-          @click="openLightbox(index)"
-          ref="cards"
-        >
+        <div v-for="(img, index) in images" :key="img.id" class="card" @click="openLightbox(index)" ref="cards">
           <div class="card-inner">
-            <img
-              :src="img.src"
-              :alt="img.alt"
-              loading="lazy"
-              @load="onImageLoad($event)"
-            />
+            <img :src="img.src" :alt="img.alt" loading="lazy" @load="onImageLoad($event)" />
             <div class="overlay">
               <span>查看大图</span>
             </div>
@@ -46,12 +35,7 @@
       </div>
       <transition name="fade">
         <ul v-if="expanded" class="ranking-list">
-          <li
-            v-for="(item, idx) in rankingList"
-            :key="idx"
-            class="ranking-item"
-            :class="`rank-${idx + 1}`"
-          >
+          <li v-for="(item, idx) in rankingList" :key="idx" class="ranking-item" :class="`rank-${idx + 1}`">
             <span class="rank">{{ idx + 1 }}</span>
             <span class="name">{{ item.nickname }}</span>
             <span class="count">{{ item.count }} 张</span>
@@ -68,23 +52,22 @@
     </div>
 
     <!-- 上传弹窗 -->
-    <div
-      v-if="uploadModalOpen"
-      class="upload-modal-overlay"
-      @click.self="closeUploadModal"
-    >
+    <div v-if="uploadModalOpen" class="upload-modal-overlay" @click.self="closeUploadModal">
       <div class="upload-modal">
         <h3>批量上传图片</h3>
         <div class="tip-container">
           <ul class="tips-list">
             <li>
-              审核规则：1.不要 AI 图 2.不要色情倾向 3.要我能认出是珂莱塔。
+              审核规则：1.不要 AI 图 2.不要色情倾向 3.要我能认出是椿。
             </li>
             <li>
               由于没有用户系统，我这边不好做审核反馈，但只要显示上传成功，我这边肯定能收到。
             </li>
             <li>
               如果图片数量较多请在b站私信联系我给我网盘链接，因为我云服务器比较小一次性上传太多图片可能会导致上传不上，感谢理解。
+            </li>
+            <li>
+              因为审核上传一次比较麻烦，所以审核时间不定，最晚一周，感谢谅解。
             </li>
           </ul>
         </div>
@@ -98,13 +81,7 @@
         </label>
         <label>
           选择图片（最多 {{ remaining }} 张）：
-          <input
-            ref="fileInput"
-            type="file"
-            multiple
-            accept="image/*"
-            @change="handleFileSelect"
-          />
+          <input ref="fileInput" type="file" multiple accept="image/*" @change="handleFileSelect" />
         </label>
         <p class="tip" v-if="selectedFiles.length">
           已选 {{ selectedFiles.length }} 张
@@ -118,15 +95,10 @@
       </div>
     </div>
 
-    <div class="floating-chibis">
-      <img
-        v-for="(pet, i) in chibiList"
-        :key="i"
-        :src="pet.src"
-        :style="{ top: pet.top + 'px', left: pet.left + 'px' }"
-        class="chibi-img"
-      />
-    </div>
+    <!-- <div class="floating-chibis">
+      <img v-for="(pet, i) in chibiList" :key="i" :src="pet.src" :style="{ top: pet.top + 'px', left: pet.left + 'px' }"
+        class="chibi-img" />
+    </div> -->
   </div>
 </template>
 
@@ -204,7 +176,7 @@ const page = 1;
 const pageSize = 99;
 
 const fetchRanking = async () => {
-  const res = await getRankingList({ page, pageSize, character_key: "klt" });
+  const res = await getRankingList({ page, pageSize, character_key: "chun" });
   if (res.success) {
     rankingList.value = res.data;
   } else {
@@ -251,7 +223,7 @@ async function loadNextPage() {
       page: pageImage.value,
       limit: limit.value,
       sortBy: sortBy.value,
-      character_key: "klt",
+      character_key: "chun",
       order: order.value,
     });
     const likedIds = getLikedIds();
@@ -412,7 +384,7 @@ async function submitUpload() {
     const res = await uploadImages(
       selectedFiles.value,
       nickname.value.trim(),
-      "klt"
+      "chun"
     );
     const uploadedCount = res.data.length;
     // 更新 localStorage
@@ -458,104 +430,104 @@ onMounted(async () => {
   if (sentinel.value) {
     sentinelObserver.observe(sentinel.value);
   }
-  // 1. 基础配置信息
-  const total = 9; // 总共 9 张图（编号 1～9）
-  const pickCount = 3; // 每次抽取 3 张
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  // // 1. 基础配置信息
+  // const total = 9; // 总共 9 张图（编号 1～9）
+  // const pickCount = 3; // 每次抽取 3 张
+  // const vw = window.innerWidth;
+  // const vh = window.innerHeight;
 
-  // 如果已知单张小人图片的宽高，可避免超出边界；
-  // 假设小人图片宽 100px、高 100px，按需替换：
-  const imgWidth = 100;
-  const imgHeight = 100;
+  // // 如果已知单张小人图片的宽高，可避免超出边界；
+  // // 假设小人图片宽 100px、高 100px，按需替换：
+  // const imgWidth = 100;
+  // const imgHeight = 100;
 
-  // 2. Fisher–Yates 洗牌函数
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
+  // // 2. Fisher–Yates 洗牌函数
+  // function shuffle(array) {
+  //   for (let i = array.length - 1; i > 0; i--) {
+  //     const j = Math.floor(Math.random() * (i + 1));
+  //     [array[i], array[j]] = [array[j], array[i]];
+  //   }
+  //   return array;
+  // }
 
-  // 3. 随机选出 3 个编号
-  const nums = shuffle(Array.from({ length: total }, (_, k) => k + 1));
-  const picks = nums.slice(0, pickCount);
+  // // 3. 随机选出 3 个编号
+  // const nums = shuffle(Array.from({ length: total }, (_, k) => k + 1));
+  // const picks = nums.slice(0, pickCount);
 
-  // 4. 生成随机位置并填充 chibiList
-  chibiList.value = []; // 先清空
-  picks.forEach((i) => {
-    chibiList.value.push({
-      src: `/QImages/1 (${i}).png`,
-      left: Math.random() * (vw - imgWidth), // 保证不超出左右边界
-      top: Math.random() * (vh - imgHeight), // 保证不超出上下边界
-    });
-  });
+  // // 4. 生成随机位置并填充 chibiList
+  // chibiList.value = []; // 先清空
+  // picks.forEach((i) => {
+  //   chibiList.value.push({
+  //     src: `/QImages/1 (${i}).png`,
+  //     left: Math.random() * (vw - imgWidth), // 保证不超出左右边界
+  //     top: Math.random() * (vh - imgHeight), // 保证不超出上下边界
+  //   });
+  // });
 
-  // 2. 等 img 渲染到 DOM
-  await nextTick();
+  // // 2. 等 img 渲染到 DOM
+  // await nextTick();
 
-  // 3. 给每个小人绑定 GSAP 动画
-  const imgs = document.querySelectorAll<HTMLImageElement>(".chibi-img");
-  imgs.forEach((img, index) => {
-    const padding = 200; // 边缘预留空间
-    // ✅ 初始出场动画（闪现）
-    gsap.fromTo(
-      img,
-      { opacity: 0, scale: 0.5 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        ease: "back.out(2)",
-        delay: 0.2 * index,
-      }
-    );
+  // // 3. 给每个小人绑定 GSAP 动画
+  // const imgs = document.querySelectorAll<HTMLImageElement>(".chibi-img");
+  // imgs.forEach((img, index) => {
+  //   const padding = 200; // 边缘预留空间
+  //   // ✅ 初始出场动画（闪现）
+  //   gsap.fromTo(
+  //     img,
+  //     { opacity: 0, scale: 0.5 },
+  //     {
+  //       opacity: 1,
+  //       scale: 1,
+  //       duration: 0.8,
+  //       ease: "back.out(2)",
+  //       delay: 0.2 * index,
+  //     }
+  //   );
 
-    // ✅ 鼠标靠近闪避
-    img.addEventListener("mouseenter", () => {
-      gsap.killTweensOf(img);
+  //   // ✅ 鼠标靠近闪避
+  //   img.addEventListener("mouseenter", () => {
+  //     gsap.killTweensOf(img);
 
-      gsap.to(img, {
-        x: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
-        y: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
-        duration: 1.2,
-        ease: "back.out(2)",
-        onComplete: () => {
-          // 闪避完成后，再重新启用动画
-          animate(img);
-        },
-      });
-    });
+  //     gsap.to(img, {
+  //       x: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
+  //       y: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
+  //       duration: 1.2,
+  //       ease: "back.out(2)",
+  //       onComplete: () => {
+  //         // 闪避完成后，再重新启用动画
+  //         animate(img);
+  //       },
+  //     });
+  //   });
 
-    const animate = (img: HTMLImageElement) => {
-      let { x, y } = img.getBoundingClientRect();
-      let deltaX = (Math.random() - 0.5) * 200;
-      let deltaY = (Math.random() - 0.5) * 200;
+  //   const animate = (img: HTMLImageElement) => {
+  //     let { x, y } = img.getBoundingClientRect();
+  //     let deltaX = (Math.random() - 0.5) * 200;
+  //     let deltaY = (Math.random() - 0.5) * 200;
 
-      // 预测一下偏移后的位置
-      let nextX = x + deltaX;
-      let nextY = y + deltaY;
+  //     // 预测一下偏移后的位置
+  //     let nextX = x + deltaX;
+  //     let nextY = y + deltaY;
 
-      // 校正：防漂出左、右、上、下边界
-      if (nextX < padding) deltaX = padding - x;
-      if (nextX + img.width > window.innerWidth - padding)
-        deltaX = window.innerWidth - padding - (x + img.width);
-      if (nextY < padding) deltaY = padding - y;
-      if (nextY + img.height > window.innerHeight - padding)
-        deltaY = window.innerHeight - padding - (y + img.height);
+  //     // 校正：防漂出左、右、上、下边界
+  //     if (nextX < padding) deltaX = padding - x;
+  //     if (nextX + img.width > window.innerWidth - padding)
+  //       deltaX = window.innerWidth - padding - (x + img.width);
+  //     if (nextY < padding) deltaY = padding - y;
+  //     if (nextY + img.height > window.innerHeight - padding)
+  //       deltaY = window.innerHeight - padding - (y + img.height);
 
-      gsap.to(img, {
-        x: `+=${deltaX.toFixed(0)}`,
-        y: `+=${deltaY.toFixed(0)}`,
-        rotation: `+=${((Math.random() - 0.5) * 60).toFixed(0)}`,
-        duration: 2 + Math.random() * 2,
-        ease: "power1.inOut",
-        onComplete: () => animate(img),
-      });
-    };
-    animate(img);
-  });
+  //     gsap.to(img, {
+  //       x: `+=${deltaX.toFixed(0)}`,
+  //       y: `+=${deltaY.toFixed(0)}`,
+  //       rotation: `+=${((Math.random() - 0.5) * 60).toFixed(0)}`,
+  //       duration: 2 + Math.random() * 2,
+  //       ease: "power1.inOut",
+  //       onComplete: () => animate(img),
+  //     });
+  //   };
+  //   animate(img);
+  // });
 });
 
 onBeforeUnmount(() => {
@@ -622,7 +594,8 @@ $neon-pink: #ff66c4;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 10px 28px 10px 56px; /* 左侧留足装饰空间 */
+        padding: 10px 28px 10px 56px;
+        /* 左侧留足装饰空间 */
         font-size: 1rem;
         line-height: 1;
         font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
@@ -634,13 +607,12 @@ $neon-pink: #ff66c4;
         border: 1px solid rgba(158, 24, 32, 0.08);
 
         /* 红椿渐变与文字色（写死） */
-        background: linear-gradient(
-          90deg,
-          #ffdfdf 0%,
-          #ff7b90 50%,
-          #9e1820 100%
-        );
-        color: #3b1618; /* 暗红/棕，保证可读 */
+        background: linear-gradient(90deg,
+            #ffdfdf 0%,
+            #ff7b90 50%,
+            #9e1820 100%);
+        color: #3b1618;
+        /* 暗红/棕，保证可读 */
         box-shadow: 0 8px 20px rgba(158, 24, 32, 0.06),
           inset 0 1px 0 rgba(255, 255, 255, 0.5);
 
@@ -656,16 +628,12 @@ $neon-pink: #ff66c4;
           transform: translate(-50%, -52%) rotate(-12deg);
           width: 18px;
           height: 18px;
-          background: radial-gradient(
-              8px 6px at 30% 30%,
+          background: radial-gradient(8px 6px at 30% 30%,
               rgba(255, 255, 255, 0.9),
-              transparent 35%
-            ),
-            linear-gradient(
-              180deg,
+              transparent 35%),
+            linear-gradient(180deg,
               rgba(255, 122, 134, 0.95),
-              rgba(158, 24, 32, 0.95)
-            );
+              rgba(158, 24, 32, 0.95));
           clip-path: polygon(50% 0%, 68% 24%, 50% 100%, 32% 24%);
           border-radius: 4px;
           box-shadow: 0 2px 6px rgba(158, 24, 32, 0.12);
@@ -679,12 +647,10 @@ $neon-pink: #ff66c4;
           transform: translateY(-4px);
           box-shadow: 0 14px 36px rgba(158, 24, 32, 0.12),
             inset 0 1px 0 rgba(255, 255, 255, 0.5);
-          background: linear-gradient(
-            90deg,
-            #ffd6da 0%,
-            #ff6a82 50%,
-            #8b141c 100%
-          );
+          background: linear-gradient(90deg,
+              #ffd6da 0%,
+              #ff6a82 50%,
+              #8b141c 100%);
           color: #ffffff;
         }
 
@@ -710,6 +676,7 @@ $neon-pink: #ff66c4;
         }
 
         &.loaded {
+
           // Blur-up & grayscale removed
           .card-inner img {
             filter: none;
@@ -921,7 +888,9 @@ $neon-pink: #ff66c4;
 
     /* 阴影（柔和 + 椿色光晕） */
     box-shadow: 0 14px 36px rgba(184, 58, 74, 0.12),
-      /* 主体柔和投影（暖红） */ 0 0 28px rgba(255, 79, 79, 0.08); /* 霓虹晕光（猩红） */
+      /* 主体柔和投影（暖红） */
+      0 0 28px rgba(255, 79, 79, 0.08);
+    /* 霓虹晕光（猩红） */
 
     overflow: visible;
     transition: transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1),
@@ -935,69 +904,78 @@ $neon-pink: #ff66c4;
     }
   }
 
-  /* 上传弹窗：冰蓝 + 霓虹粉 珂莱塔风格 */
+
   .upload-modal-overlay {
     position: fixed;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(8, 10, 12, 0.65),
-      rgba(8, 10, 12, 0.5)
-    );
-    /* 深色半透明底让弹窗更突出 */
-    backdrop-filter: blur(8px) saturate(1.06);
+    /* 深色底并微带暖红泛光，让弹窗更突出且氛围与椿一致 */
+    background: linear-gradient(180deg,
+        rgba(10, 6, 6, 0.76),
+        rgba(10, 6, 6, 0.58));
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
+    backdrop-filter: blur(8px) saturate(1.06);
+
+    /* 在 overlay 顶层加一层微弱的红色晕染（视觉氛围） */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(600px 240px at 50% 30%, rgba(158, 24, 32, 0.06), transparent 15%);
+      mix-blend-mode: screen;
+    }
   }
 
-  /* 弹窗主体 */
+  /* 弹窗主体（红椿化） */
   .upload-modal {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(245, 250, 255, 0.98)
-    );
+    background: linear-gradient(180deg,
+        rgba(255, 246, 247, 0.98),
+        rgba(255, 240, 241, 0.96));
     padding: 36px;
     border-radius: 18px;
     width: 660px;
-    color: #17333a;
-    /* 深海蓝文本，兼具可读性 */
-    box-shadow: 0 18px 48px rgba(20, 30, 40, 0.45),
-      0 6px 20px rgba($neon-pink, 0.06);
-    border: 1px solid rgba(190, 230, 250, 0.18);
+    color: #2b1516;
+    /* 深色文本，保证可读性 */
+    box-shadow:
+      0 28px 80px rgba(150, 26, 34, 0.42),
+      0 8px 28px rgba(190, 90, 110, 0.06);
+    border: 1px solid rgba(158, 24, 32, 0.06);
     position: relative;
-    font-family: "Helvetica Neue", "Noto Sans SC", sans-serif;
+    font-family: "Helvetica Neue", "Noto Sans SC", "PingFang SC", sans-serif;
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
 
-    /* 轻微霓虹边缘发光 */
+    /* 外发光（霓虹边） */
     &::before {
       content: "";
       position: absolute;
       inset: -2px;
       border-radius: 20px;
-      background: linear-gradient(
-        90deg,
-        rgba($ice-blue, 0.18),
-        rgba($neon-pink, 0.12)
-      );
+      background: linear-gradient(90deg,
+          rgba(255, 179, 186, 0.18),
+          rgba(158, 24, 32, 0.12));
       filter: blur(18px);
-      opacity: 0.9;
+      opacity: 0.95;
       pointer-events: none;
       mix-blend-mode: screen;
     }
 
+    /* 标题 */
     h3 {
       margin-bottom: 16px;
       font-size: 1.6rem;
-      color: $neon-pink;
+      color: #9e1820;
+      /* 椿的深红 */
       text-align: center;
       font-weight: 800;
       letter-spacing: 0.6px;
-      /* 双色内发光，显得科技而梦幻 */
-      text-shadow: 0 0 10px rgba($ice-blue, 0.6),
-        0 0 22px rgba($neon-pink, 0.18);
+      /* 温和的内外发光，突出主题感 */
+      text-shadow:
+        0 2px 10px rgba(158, 24, 32, 0.12),
+        0 0 18px rgba(255, 119, 134, 0.06);
     }
 
     .stats {
@@ -1006,22 +984,21 @@ $neon-pink: #ff66c4;
       text-align: center;
 
       strong {
-        color: $neon-pink;
+        color: #b83a4a;
       }
     }
 
+    /* tip 区块改为暖粉玻璃并加深左侧强调线 */
     .tip-container {
       margin-top: 20px;
       padding: 14px 18px;
-      background: linear-gradient(
-        180deg,
-        rgba($ice-blue, 0.06),
-        rgba($neon-pink, 0.03)
-      );
-      border-left: 4px solid rgba($neon-pink, 0.18);
+      background: linear-gradient(180deg,
+          rgba(255, 245, 246, 0.88),
+          rgba(255, 240, 241, 0.86));
+      border-left: 4px solid rgba(158, 24, 32, 0.12);
       border-radius: 10px;
       backdrop-filter: blur(4px);
-      color: #14343a;
+      color: #2a2a2a;
 
       .tips-list {
         list-style: none;
@@ -1030,27 +1007,25 @@ $neon-pink: #ff66c4;
 
         li {
           position: relative;
-          padding-left: 30px;
+          padding-left: 34px;
           margin-bottom: 10px;
           font-size: 0.95rem;
-          color: #163235;
+          color: #2a2a2a;
 
           &::before {
             content: "";
             position: absolute;
-            left: 0;
-            top: 3px;
+            left: 6px;
+            top: 6px;
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: radial-gradient(
-              circle at 35% 30%,
-              #fff 0%,
-              rgba(255, 255, 255, 0.5) 10%,
-              $ice-blue 40%,
-              $neon-pink 100%
-            );
-            box-shadow: 0 4px 10px rgba($neon-pink, 0.12);
+            background: radial-gradient(circle at 35% 30%,
+                #fff7f8 0%,
+                rgba(255, 255, 255, 0.7) 10%,
+                #ff9aa6 38%,
+                #9e1820 100%);
+            box-shadow: 0 4px 10px rgba(158, 24, 32, 0.08);
           }
 
           &:last-child {
@@ -1064,14 +1039,15 @@ $neon-pink: #ff66c4;
       margin-top: 10px;
       text-align: right;
       font-size: 0.9rem;
-      color: #2b4a4a;
+      color: #3a2a2b;
     }
 
+    /* 表单控件 */
     label {
       display: block;
       margin-bottom: 18px;
       font-size: 0.95rem;
-      color: #153b3f;
+      color: #2b2b2b;
 
       input[type="text"],
       input[type="file"] {
@@ -1079,31 +1055,32 @@ $neon-pink: #ff66c4;
         margin-top: 8px;
         padding: 10px 12px;
         border-radius: 10px;
-        border: 1px solid rgba(30, 120, 140, 0.08);
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.98),
-          rgba($ice-blue, 0.03)
-        );
-        color: #142f32;
+        border: 1px solid rgba(180, 140, 145, 0.10);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 247, 0.96));
+        color: #2b1516;
         font-size: 0.95rem;
         outline: none;
         transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+      }
 
-        &:focus {
-          border-color: $neon-pink;
-          box-shadow: 0 6px 20px rgba($neon-pink, 0.08),
-            0 2px 8px rgba($ice-blue, 0.06);
-          transform: translateY(-1px);
-        }
+      input[type="text"]:focus,
+      input[type="file"]:focus {
+        border-color: rgba(255, 123, 144, 0.9);
+        box-shadow:
+          0 8px 26px rgba(184, 58, 74, 0.08),
+          0 2px 8px rgba(255, 160, 170, 0.06);
+        transform: translateY(-1px);
       }
     }
 
+    /* 按钮行（主/取消） */
     .modal-actions {
       display: flex;
       justify-content: flex-end;
       gap: 14px;
       margin-top: 28px;
+      flex-wrap: wrap;
+      align-items: center;
 
       button {
         padding: 12px 24px;
@@ -1112,62 +1089,57 @@ $neon-pink: #ff66c4;
         cursor: pointer;
         font-weight: 700;
         font-size: 0.95rem;
-        transition: background 0.22s ease, box-shadow 0.22s ease,
-          transform 0.12s;
+        transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.12s;
         min-width: 96px;
+        color: #fff;
+      }
 
-        &:not(.cancel) {
-          /* 主按钮：霓虹粉为主，冰蓝高光 */
-          color: #fff;
-          background: linear-gradient(
-            135deg,
-            $neon-pink 0%,
-            color.mix($neon-pink, $ice-blue, $weight: 30%) 60%,
-            $ice-blue 100%
-          );
-          box-shadow: 0 10px 28px rgba($neon-pink, 0.18),
-            0 2px 10px rgba($ice-blue, 0.06);
-        }
+      /* 主按钮：椿粉 -> 深红 渐变 */
+      button:not(.cancel) {
+        background: linear-gradient(135deg, #ff8aa2 0%, #d94e60 60%, #9e1820 100%);
+        box-shadow:
+          0 12px 36px rgba(184, 58, 74, 0.14),
+          0 4px 18px rgba(158, 24, 32, 0.06);
+      }
 
-        &:not(.cancel):hover:not(:disabled) {
-          transform: translateY(-4px);
-          box-shadow: 0 18px 46px rgba($neon-pink, 0.22),
-            0 6px 18px rgba($ice-blue, 0.08);
-        }
+      button:not(.cancel):hover:not(:disabled) {
+        transform: translateY(-4px);
+        box-shadow:
+          0 20px 56px rgba(184, 58, 74, 0.2),
+          0 8px 28px rgba(158, 24, 32, 0.08);
+      }
 
-        &:not(.cancel):disabled {
-          background: linear-gradient(
-            135deg,
-            rgba($neon-pink, 0.18),
-            rgba($ice-blue, 0.18)
-          );
-          opacity: 0.6;
-          cursor: not-allowed;
-          box-shadow: none;
-        }
+      button:not(.cancel):disabled {
+        background: linear-gradient(135deg, rgba(255, 138, 154, 0.18), rgba(185, 130, 140, 0.18));
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+        color: #fff;
+      }
 
-        &.cancel {
-          background: transparent;
-          border: 2px solid rgba($ice-blue, 0.18);
-          color: #123c41;
+      /* 取消按钮：透明边框风格 */
+      button.cancel {
+        background: transparent;
+        border: 2px solid rgba(158, 24, 32, 0.08);
+        color: #591e22;
+        min-width: 86px;
+      }
 
-          &:hover {
-            background: rgba($ice-blue, 0.06);
-          }
-        }
+      button.cancel:hover {
+        background: rgba(158, 24, 32, 0.04);
       }
     }
+
   }
+
 
   .ranking-panel {
     width: 220px;
     padding: 16px;
     /* 红椿渐变毛玻璃面板（写死颜色） */
-    background: linear-gradient(
-      160deg,
-      rgba(255, 238, 241, 0.88),
-      rgba(255, 232, 234, 0.84)
-    );
+    background: linear-gradient(160deg,
+        rgba(255, 238, 241, 0.88),
+        rgba(255, 232, 234, 0.84));
     -webkit-backdrop-filter: blur(10px) saturate(120%);
     backdrop-filter: blur(10px) saturate(120%);
     border-radius: 18px;
@@ -1197,7 +1169,8 @@ $neon-pink: #ff66c4;
       .ranking-title {
         font-size: 1.15rem;
         font-weight: 800;
-        color: #9e1820; /* 深椿红 */
+        color: #9e1820;
+        /* 深椿红 */
         font-family: "Zhi Mang Xing", "STKaiti", serif;
         margin: 0;
         /* 轻微外发光，提升质感 */
@@ -1208,11 +1181,9 @@ $neon-pink: #ff66c4;
         font-size: 1rem;
         color: #9e1820;
         user-select: none;
-        background: linear-gradient(
-          180deg,
-          rgba(255, 243, 244, 0.9),
-          rgba(255, 238, 239, 0.8)
-        );
+        background: linear-gradient(180deg,
+            rgba(255, 243, 244, 0.9),
+            rgba(255, 238, 239, 0.8));
         padding: 6px 8px;
         border-radius: 8px;
         border: 1px solid rgba(158, 24, 32, 0.06);
@@ -1234,23 +1205,19 @@ $neon-pink: #ff66c4;
         padding: 8px 10px;
         margin-bottom: 8px;
         border-radius: 12px;
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.9),
-          rgba(255, 248, 249, 0.95)
-        );
+        background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.9),
+            rgba(255, 248, 249, 0.95));
         border: 1px solid rgba(245, 235, 238, 0.7);
         transition: transform 240ms cubic-bezier(0.2, 0.9, 0.25, 1),
           background 240ms ease, box-shadow 240ms ease, color 200ms ease;
-        will-change: transform;
+       
 
         &:hover {
           transform: translateY(-4px);
-          background: linear-gradient(
-            90deg,
-            rgba(255, 240, 242, 0.98),
-            rgba(255, 230, 232, 0.98)
-          );
+          background: linear-gradient(90deg,
+              rgba(255, 240, 242, 0.98),
+              rgba(255, 230, 232, 0.98));
           box-shadow: 0 10px 30px rgba(158, 24, 32, 0.06);
         }
 
@@ -1259,7 +1226,8 @@ $neon-pink: #ff66c4;
           text-align: center;
           font-weight: 900;
           font-size: 1rem;
-          color: #b82d3b; /* 鲜明红 */
+          color: #b82d3b;
+          /* 鲜明红 */
           text-shadow: 0 2px 8px rgba(184, 58, 74, 0.12);
         }
 
@@ -1285,12 +1253,10 @@ $neon-pink: #ff66c4;
 
         /* ---- 前三名强化样式 ---- */
         &.rank-1 {
-          background: linear-gradient(
-            135deg,
-            #ffb3b9 0%,
-            #ff4f4f 60%,
-            #9e1820 100%
-          );
+          background: linear-gradient(135deg,
+              #ffb3b9 0%,
+              #ff4f4f 60%,
+              #9e1820 100%);
           color: #fff;
           box-shadow: 0 10px 36px rgba(158, 24, 32, 0.14),
             0 0 18px rgba(255, 79, 79, 0.08);
@@ -1300,21 +1266,21 @@ $neon-pink: #ff66c4;
             color: #fff;
             text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
           }
+
           .name {
             color: #fff;
           }
+
           .count {
             color: #fff;
           }
         }
 
         &.rank-2 {
-          background: linear-gradient(
-            135deg,
-            #ffd6da 0%,
-            #ff7b90 60%,
-            #8b141c 100%
-          );
+          background: linear-gradient(135deg,
+              #ffd6da 0%,
+              #ff7b90 60%,
+              #8b141c 100%);
           color: #fff;
           box-shadow: 0 8px 28px rgba(158, 24, 32, 0.12);
           border: 1px solid #8b141c;
@@ -1322,21 +1288,21 @@ $neon-pink: #ff66c4;
           .rank {
             color: #fff;
           }
+
           .name {
             color: #fff;
           }
+
           .count {
             color: #fff;
           }
         }
 
         &.rank-3 {
-          background: linear-gradient(
-            135deg,
-            #ffecec 0%,
-            #ff9aa6 60%,
-            #7a1318 100%
-          );
+          background: linear-gradient(135deg,
+              #ffecec 0%,
+              #ff9aa6 60%,
+              #7a1318 100%);
           color: #fff;
           box-shadow: 0 6px 22px rgba(158, 24, 32, 0.1);
           border: 1px solid #7a1318;
@@ -1344,9 +1310,11 @@ $neon-pink: #ff66c4;
           .rank {
             color: #fff;
           }
+
           .name {
             color: #fff;
           }
+
           .count {
             color: #fff;
           }

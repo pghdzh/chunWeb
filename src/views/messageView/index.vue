@@ -604,7 +604,6 @@ onMounted(() => {
       left: 12px;
       transform: none;
       width: calc(100% - 24px);
-      top: 18px;
     }
 
     .message-list {
@@ -640,37 +639,7 @@ onMounted(() => {
     }
   }
 
-  @media (max-width: 480px) {
-    padding-top: 80px;
-
-    .board-header {
-      padding: 10px 12px;
-      border-radius: 12px;
-      top: 12px;
-    }
-    .board-header .title-wrap h1 {
-      font-size: 15px;
-    }
-    .message-card {
-      padding: 10px 12px;
-    }
-    .message-form {
-      padding: 10px;
-    }
-  }
-
-  /* 无动画偏好退化 */
-  @media (prefers-reduced-motion: reduce) {
-    .msg-enter-from,
-    .msg-leave-to,
-    .message-card,
-    .message-form,
-    .message-list {
-      transition: none !important;
-      animation: none !important;
-      transform: none !important;
-    }
-  }
+ 
 
   /* sr-only */
   .sr-only {

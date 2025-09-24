@@ -1,19 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" aria-hidden="true" role="img">
   <defs>
-    <radialGradient id="bluePink" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="50%" stop-color="#9fdcff"/>
-      <stop offset="100%" stop-color="#f7b3ff"/>
-    </radialGradient>
+    <!-- 主渐变：深红到猩红 -->
+    <linearGradient id="grad-red" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff7a86"/>
+      <stop offset="1" stop-color="#9e1820"/>
+    </linearGradient>
+
+    <!-- 柔粉渐变（白椿侧） -->
+    <linearGradient id="grad-pink" x1="0" x2="1">
+      <stop offset="0" stop-color="#fff6f7"/>
+      <stop offset="1" stop-color="#ffd7db"/>
+    </linearGradient>
+
+    <!-- 细微高光 -->
+    <linearGradient id="grad-highlight" x1="0" x2="1">
+      <stop offset="0" stop-color="rgba(255,255,255,0.85)"/>
+      <stop offset="1" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+
+    <!-- 轻微投影 -->
+    <filter id="soft-shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.14"/>
+    </filter>
   </defs>
-  
-  <!-- 背景圆润底 -->
-  <circle cx="32" cy="32" r="28" fill="url(#bluePink)" stroke="#ffffff" stroke-width="2"/>
-  
-  <!-- 冰晶花瓣 -->
-  <path d="M32 10 L38 24 L54 32 L38 40 L32 54 L26 40 L10 32 L26 24 Z" 
-        fill="white" fill-opacity="0.7" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
-  
-  <!-- 中心亮点 -->
-  <circle cx="32" cy="32" r="4" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 圆形边框（薄） -->
+  <circle cx="150" cy="150" r="122" fill="none" stroke="#f6d7db" stroke-width="6" opacity="0.9"/>
+  <circle cx="150" cy="150" r="116" fill="#fff" opacity="0.02"/>
+
+  <!-- 主体：对称单瓣，以两片拼合体现“赤白双面” -->
+  <g transform="translate(150,150)" filter="url(#soft-shadow)">
+    <!-- 右侧（深色/锋利） -->
+    <path d="M4 -88
+             C36 -68, 62 -28, 68 8
+             C72 40, 44 84, 8 106
+             C-6 116, -18 110, -26 98
+             C-10 70, 4 42, 4 -88 Z"
+          fill="url(#grad-red)" />
+
+    <!-- 左侧（浅粉/柔情） -->
+    <path d="M4 -88
+             C-28 -72, -54 -34, -62 4
+             C-70 40, -48 86, -6 106
+             C6 110, 18 106, 26 96
+             C14 58, 4 40, 4 -88 Z"
+          fill="url(#grad-pink)" />
+
+    <!-- 中央切割线（细） -->
+    <path d="M2 -92
+             C6 -66, 6 -10, 6 20
+             C6 56, 4 86, 4 106"
+          stroke="rgba(255,255,255,0.18)" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+    <!-- 顶部小高光 -->
+    <path d="M8 -78
+             C20 -72, 34 -62, 36 -44"
+          stroke="url(#grad-highlight)" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+  </g>
+
+  <!-- 细微中心圈（增加徽章感） -->
+  <circle cx="150" cy="150" r="12" fill="#fff6f7" opacity="0.95" />
+
 </svg>

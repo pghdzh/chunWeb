@@ -354,7 +354,7 @@ onMounted(() => {
     box-shadow: 0 12px 40px rgba(158, 24, 32, 0.06);
     border: 3px solid rgba(255, 255, 255, 0.9);
     transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
-    will-change: transform;
+   
   }
 
   .avatar-card:hover .avatar {
@@ -576,7 +576,7 @@ onMounted(() => {
     margin: 18px 0;
     z-index: 2;
     transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.28s;
-    will-change: transform;
+   
   }
 
   .tl-card {

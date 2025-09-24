@@ -2,8 +2,8 @@
     <div class="yuzuki-resources">
         <header class="hero">
             <div class="hero-inner">
-                <h1>i珂</h1>
-                <p class="subtitle">可自由上传关于珂莱塔相关链接</p>
+                <h1>资源分享</h1>
+                <p class="subtitle">可自由上传关于椿的相关链接</p>
             </div>
         </header>
 
@@ -50,7 +50,7 @@
                 <ul class="items">
                     <li v-for="item in sortedResources" :key="item.id" class="item">
                         <a :href="item.link" target="_blank" rel="noopener noreferrer" class="title">{{ item.title
-                            }}</a>
+                        }}</a>
 
                         <div class="meta">
                             <div class="left">
@@ -101,8 +101,8 @@ interface Resource {
     role_key?: string
 }
 
-const STORAGE_KEY = 'klt_resources_v1'
-const DEFAULT_ROLE = 'klt'
+const STORAGE_KEY = 'chun_resources_v1'
+const DEFAULT_ROLE = 'chun'
 
 const form = ref<{ title: string; uploader: string; link: string; type: ResourceType }>({
     title: '',
@@ -283,42 +283,57 @@ function formatTime(iso: string) {
 </script>
 
 <style lang="scss" scoped>
-$bg1: linear-gradient(135deg, #fff6fb 0%, #f6fbff 100%);
-$accent: #ff66c4; // 粉色
-$text: #3b2f36;
-$muted: #8b7e87;
-$ice-blue: #bff7ff;
-$neon-pink: #ff66c4;
+/* 红椿色板（写死 hex，易识别）：
+   深红：#9e1820
+   中红：#d94e60
+   浅粉：#ffd7db
+   文本深色：#2b1516
+   次要灰：#7b5b5f
+*/
 
 .yuzuki-resources {
     min-height: 100vh;
-    background-color: #fff6f9;
-    background-image: linear-gradient(145deg,
-            #fff6f9 0%,
-            #fff1f4 40%,
-            #eef6fb 100%);
-    color: $text;
+    background: linear-gradient(145deg, #fff6f7 0%, #fff1f3 40%, #fff0f2 100%);
+    color: #2b1516;
     display: flex;
     flex-direction: column;
     padding-top: 70px;
+    font-family: "Noto Sans SC", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 
+    /* 顶区 hero（暖粉玻璃面板感） */
     .hero {
-        padding: 16px;
-        background: linear-gradient(180deg, rgba(185, 131, 255, 0.12), rgba(255, 179, 217, 0.06));
+        padding: 18px 12px;
+        background: linear-gradient(180deg, rgba(255, 238, 240, 0.46), rgba(255, 243, 244, 0.32));
+        -webkit-backdrop-filter: blur(6px) saturate(120%);
+        backdrop-filter: blur(6px) saturate(120%);
+        border-bottom: 1px solid rgba(158, 24, 32, 0.04);
 
         .hero-inner {
             max-width: 1000px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
 
             h1 {
                 margin: 0;
                 font-size: 20px;
+                display: inline-block;
+                width: 120px;
+                font-weight: 900;
                 letter-spacing: 0.6px;
+                /* 文字渐变（椿专用） */
+                background: linear-gradient(90deg, #e9acb4 0%, #ff6a7a 45%, #b42229 90%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                -webkit-text-fill-color: transparent;
             }
 
             .subtitle {
                 margin-top: 6px;
-                color: $muted;
+                color: #7b5b5f;
                 font-size: 13px;
             }
         }
@@ -329,12 +344,16 @@ $neon-pink: #ff66c4;
         margin: 16px auto;
         padding: 0 12px;
         width: 100%;
+        box-sizing: border-box;
 
+        /* 上传区（毛玻璃 + 红色强调） */
         .uploader {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-            padding: 0; // padding moved into .upload-form
-            box-shadow: 0 6px 18px rgba(96, 72, 120, 0.06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 246, 247, 0.96));
+            border-radius: 14px;
+            padding: 0;
+            box-shadow: 0 10px 36px rgba(158, 24, 32, 0.06);
+            border: 1px solid rgba(158, 24, 32, 0.06);
+            overflow: hidden;
 
             .uploader-head {
                 display: flex;
@@ -343,42 +362,49 @@ $neon-pink: #ff66c4;
 
                 .toggle {
                     background: transparent;
-                    border: none;
+                    border: 1px solid rgba(158, 24, 32, 0.08);
+                    color: #9e1820;
                     padding: 6px 10px;
                     border-radius: 8px;
                     cursor: pointer;
-                    color: $accent;
                     font-weight: 700;
+                    transition: background .18s, transform .12s;
                 }
             }
 
             .upload-form {
-                padding: 12px;
+                padding: 14px;
                 max-height: 1600px;
                 overflow: hidden;
                 transition: max-height 280ms ease, padding 280ms ease;
 
-                &.hidden {
-                    display: none;
-                }
-
                 .row {
                     display: flex;
                     gap: 8px;
-                    margin-bottom: 8px;
+                    margin-bottom: 10px;
 
                     input,
                     select {
                         flex: 1 1 0;
                         padding: 10px 12px;
                         border-radius: 10px;
-                        border: 1px solid rgba(59, 47, 54, 0.06);
+                        border: 1px solid rgba(59, 22, 28, 0.06);
                         font-size: 14px;
-                        background: rgba(255, 255, 255, 0.9);
+                        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 247, 0.98));
+                        color: #2b1516;
+                        outline: none;
+                        transition: box-shadow .16s, border-color .16s, transform .08s;
                     }
 
                     select {
-                        max-width: 120px;
+                        max-width: 140px;
+                    }
+
+                    input:focus,
+                    select:focus {
+                        border-color: rgba(217, 78, 96, 0.9);
+                        box-shadow: 0 8px 26px rgba(217, 78, 96, 0.06);
+                        transform: translateY(-1px);
                     }
                 }
 
@@ -391,25 +417,30 @@ $neon-pink: #ff66c4;
                         padding: 8px 12px;
                         border-radius: 10px;
                         border: none;
-                        font-weight: 600;
+                        font-weight: 700;
                         cursor: pointer;
 
                         &.primary {
-                            background: $accent;
-                            color: white;
+                            background: linear-gradient(135deg, #ff8aa2 0%, #d94e60 60%, #9e1820 100%);
+                            color: #fff;
+                            box-shadow: 0 10px 30px rgba(184, 58, 74, 0.12);
+                            transition: transform .12s ease, box-shadow .14s ease;
+                        }
+
+                        &.primary:active {
+                            transform: translateY(1px) scale(.998);
+                            box-shadow: 0 6px 16px rgba(158, 24, 32, 0.08);
                         }
 
                         &.secondary {
-                            background: rgba(59, 47, 54, 0.06);
-                            color: $text;
+                            background: transparent;
+                            color: #7b5b5f;
+                            border: 1px solid rgba(158, 24, 32, 0.06);
                         }
                     }
                 }
-
-
             }
 
-            /* 收起状态 */
             &.collapsed {
                 .upload-form {
                     max-height: 0;
@@ -419,23 +450,28 @@ $neon-pink: #ff66c4;
             }
         }
 
+        /* 资源列表区 */
         .list {
-            margin-top: 14px;
+            margin-top: 18px;
 
             .list-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 8px;
+                margin-bottom: 10px;
 
                 h2 {
                     font-size: 16px;
                     margin: 0;
+                    color: #4b1a20;
+                    font-weight: 800;
                 }
 
                 .sort select {
-                    padding: 6px;
+                    padding: 8px;
                     border-radius: 8px;
+                    border: 1px solid rgba(158, 24, 32, 0.06);
+                    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 247, 0.98));
                 }
             }
 
@@ -445,16 +481,23 @@ $neon-pink: #ff66c4;
                 margin: 0;
 
                 .item {
-                    background: white;
+                    background: linear-gradient(180deg, #fff, #fff8f9);
                     border-radius: 12px;
                     padding: 12px;
-                    margin-bottom: 10px;
-                    box-shadow: 0 8px 20px rgba(95, 64, 120, 0.04);
+                    margin-bottom: 12px;
+                    box-shadow: 0 12px 34px rgba(158, 24, 32, 0.04);
+                    border: 1px solid rgba(245, 235, 238, 0.7);
+                    transition: transform .18s cubic-bezier(.2, .9, .25, 1), box-shadow .18s ease;
+
+                    &:hover {
+                        transform: translateY(-6px);
+                        box-shadow: 0 20px 56px rgba(158, 24, 32, 0.08);
+                    }
 
                     .title {
                         display: block;
-                        color: $text;
-                        font-weight: 700;
+                        color: #2b1516;
+                        font-weight: 800;
                         text-decoration: none;
                         margin-bottom: 8px;
                         font-size: 15px;
@@ -467,17 +510,26 @@ $neon-pink: #ff66c4;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
-                        color: $muted;
+                        color: #7b5b5f;
                         font-size: 13px;
 
                         .left {
                             display: flex;
                             align-items: center;
-                            gap: 6px;
-                        }
+                            gap: 8px;
 
-                        .dot {
-                            opacity: 0.6
+                            .uploader {
+                                color: #8b3a46;
+                                font-weight: 700;
+                            }
+
+                            .dot {
+                                opacity: 0.6;
+                            }
+
+                            time {
+                                color: #7b5b5f;
+                            }
                         }
 
                         .right {
@@ -492,21 +544,29 @@ $neon-pink: #ff66c4;
                                 cursor: pointer;
                                 padding: 6px 8px;
                                 border-radius: 8px;
-                                font-weight: 600;
+                                font-weight: 700;
                                 display: inline-flex;
                                 align-items: center;
                                 gap: 6px;
+                                transition: transform .08s, background .12s;
+                            }
+
+                            .like-btn:hover {
+                                transform: translateY(-2px);
                             }
 
                             .heart-icon {
                                 width: 18px;
                                 height: 18px;
                                 display: block;
+                                filter: grayscale(100%) opacity(.9);
                             }
 
-
-                            .copy-btn {
-                                color: $muted
+                            /* 当 active 时，显示椿色发光（如果你用 svg 可以用 fill 切换） */
+                            .like-btn.active .heart-icon {
+                                filter: none;
+                                transform: scale(1.03);
+                                box-shadow: 0 6px 20px rgba(217, 78, 96, 0.12);
                             }
 
                             .badge {
@@ -514,9 +574,9 @@ $neon-pink: #ff66c4;
                                 border-radius: 999px;
                                 font-size: 12px;
                                 font-weight: 700;
-
-                                background: rgba(185, 131, 255, 0.12);
-
+                                background: linear-gradient(180deg, rgba(217, 78, 96, 0.12), rgba(158, 24, 32, 0.06));
+                                color: #7a1c25;
+                                border: 1px solid rgba(217, 78, 96, 0.06);
                             }
                         }
                     }
@@ -525,23 +585,35 @@ $neon-pink: #ff66c4;
 
             .empty {
                 text-align: center;
-                color: $muted;
-                padding: 24px 0;
+                color: #7b5b5f;
+                padding: 28px 0;
             }
         }
     }
 
     .foot {
         text-align: center;
-        color: $muted;
+        color: #7b5b5f;
         font-size: 12px;
-        margin: 16px 0 40px;
+        margin: 20px 0 40px;
     }
-}
 
-/* responsive */
-@media (max-width: 640px) {
-    .yuzuki-resources {
+    /* 响应式：移动端优化 */
+    @media (max-width: 640px) {
+        padding-top: 80px;
+
+        .hero {
+            padding: 12px 10px;
+
+            .hero-inner h1 {
+                font-size: 18px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+        }
+
         .container {
             padding: 0 14px;
 
@@ -558,8 +630,11 @@ $neon-pink: #ff66c4;
 
             .items .item .title {
                 white-space: normal;
+                /* 移动端允许标题换行以提高可读性 */
             }
         }
     }
+
+ 
 }
 </style>

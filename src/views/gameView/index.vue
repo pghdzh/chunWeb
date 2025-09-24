@@ -113,7 +113,7 @@ const page = 1;
 const pageSize = 99;
 
 const fetchRanking = async () => {
-  const res = await getRankingList({ page, pageSize, character_key: "kltGame" });
+  const res = await getRankingList({ page, pageSize, character_key: "chunGame" });
   if (res.success) {
     rankingList.value = res.data;
   } else {
@@ -146,7 +146,7 @@ function closeLeaderboard() {
 
 /* ===================== 上传分数 ===================== */
 // 可修改的角色键（请按实际项目替换）
-const CHARACTER_KEY = 'kltGame';
+const CHARACTER_KEY = 'chunGame';
 
 // 提交相关状态
 const submitNickname = ref('');
