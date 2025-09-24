@@ -10,7 +10,7 @@
           <button class="avatar-card" aria-label="椿 头像卡片">
             <picture class="avatar-wrap">
               <img
-                src="@/assets/images1/QQ20250923-103501.webp"
+                src="@/assets/images1/slty (10).webp"
                 alt="珂莱塔 头像"
                 class="avatar"
                 loading="lazy"

@@ -2,7 +2,14 @@
   <div id="app">
     <transition name="fade" v-if="showIntro">
       <div class="intro-container" @click="showIntro = false">
-        <video class="video-background" :src="videoSrc" autoplay muted loop playsinline></video>
+        <video
+          class="video-background"
+          :src="videoSrc"
+          autoplay
+          muted
+          loop
+          playsinline
+        ></video>
         <div class="intro-content">
           <h1 class="welcome-text">欢迎进入</h1>
           <h2 class="title">椿电子设定集</h2>
@@ -15,30 +22,52 @@
       <main class="main-content">
         <RouterView />
       </main>
-
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { RouterView } from 'vue-router'
-import navbar from './components/navbar.vue';
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { RouterView } from "vue-router";
+import navbar from "./components/navbar.vue";
 
-const showIntro = ref(true)
-const videoSrc = ref('') // 新增
+import * as live2d from "live2d-render";
+const showIntro = ref(true);
+const videoSrc = ref(""); // 新增
+async function init() {
+  await live2d.initializeLive2D({
+    BackgroundRGBA: [0.0, 0.0, 0.0, 0.0],
+    ResourcesPath: "../public/live2d/chun.model3.json",
+    //这是你自己的live2d资源文件，相对路径引用即可
+    CanvasSize: {
+      height: 400,
+      width: 200,
+    },
+    CanvasPosition: "right",
+    ShowToolBox: true,
 
-onMounted(() => {
+    // 是否使用 indexDB 进行缓存优化，这样下一次载入就不会再发起网络请求了
+    LoadFromCache: true,
+  });
+}
+onMounted( () => {
   // 检测是否为移动端
-  const isMobile = window.innerWidth <= 768
-  const folder = isMobile ? '/mp2' : '/mp1'
-  const index = Math.floor(Math.random() * 4) + 1 // 随机 1 或 2
-  videoSrc.value = `${folder}/1 (${index}).mp4`
+  const isMobile = window.innerWidth <= 768;
+  const folder = isMobile ? "/mp2" : "/mp1";
+  const index = Math.floor(Math.random() * 4) + 1; // 随机 1 或 2
+  videoSrc.value = `${folder}/1 (${index}).mp4`;
 
   setTimeout(() => {
-    showIntro.value = false
-  }, 4000) // 播放动画 4 秒后进入主页
-})
+    showIntro.value = false;
+  }, 5000); // 播放动画 4 秒后进入主页
+
+  init()
+});
+
+onBeforeUnmount(() => {
+  model?.destroy();
+  app?.destroy();
+});
 </script>
 
 <style scoped lang="scss">
@@ -111,8 +140,6 @@ onMounted(() => {
   pointer-events: none;
   /* 避免遮挡点击 */
 }
-
-
 
 /* 动画定义 */
 @keyframes fadeIn {
