@@ -868,7 +868,7 @@ $neon-pink: #ff66c4;
     /* 位置与布局保持不变 */
     position: fixed;
     bottom: 64px;
-    right: 24px;
+    left: 24px;
     display: inline-flex;
     align-items: center;
     gap: 10px;

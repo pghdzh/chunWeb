@@ -2,14 +2,7 @@
   <div id="app">
     <transition name="fade" v-if="showIntro">
       <div class="intro-container" @click="showIntro = false">
-        <video
-          class="video-background"
-          :src="videoSrc"
-          autoplay
-          muted
-          loop
-          playsinline
-        ></video>
+        <video class="video-background" :src="videoSrc" autoplay muted loop playsinline></video>
         <div class="intro-content">
           <h1 class="welcome-text">欢迎进入</h1>
           <h2 class="title">椿电子设定集</h2>
@@ -34,7 +27,9 @@ import navbar from "./components/navbar.vue";
 import * as live2d from "live2d-render";
 const showIntro = ref(true);
 const videoSrc = ref(""); // 新增
-async function init() {
+
+
+async function init2() {
   await live2d.initializeLive2D({
     BackgroundRGBA: [0.0, 0.0, 0.0, 0.0],
     ResourcesPath: "../public/live2d/chun.model3.json",
@@ -43,14 +38,14 @@ async function init() {
       height: 400,
       width: 200,
     },
-    CanvasPosition: "right",
+    CanvasPosition: "left",
     ShowToolBox: true,
 
     // 是否使用 indexDB 进行缓存优化，这样下一次载入就不会再发起网络请求了
     LoadFromCache: true,
   });
 }
-onMounted( () => {
+onMounted(() => {
   // 检测是否为移动端
   const isMobile = window.innerWidth <= 768;
   const folder = isMobile ? "/mp2" : "/mp1";
@@ -61,7 +56,9 @@ onMounted( () => {
     showIntro.value = false;
   }, 5000); // 播放动画 4 秒后进入主页
 
-  init()
+  if (!isMobile) {
+    init2()
+  }
 });
 
 onBeforeUnmount(() => {

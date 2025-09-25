@@ -62,7 +62,7 @@ const links = [
   { name: "写给椿", path: "/message" },
   { name: "盛放画廊", path: "/gallery" },
   { name: "资源分享", path: "/resources" },
-  // { name: "小游戏", path: "/game" },
+  { name: "小游戏", path: "/game" },
   // { name: "语音馆", path: "/voice" },
 ];
 
