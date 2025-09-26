@@ -24,27 +24,27 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { RouterView } from "vue-router";
 import navbar from "./components/navbar.vue";
 
-import * as live2d from "live2d-render";
+// import * as live2d from "live2d-render";
 const showIntro = ref(true);
 const videoSrc = ref(""); // 新增
 
 
-async function init2() {
-  await live2d.initializeLive2D({
-    BackgroundRGBA: [0.0, 0.0, 0.0, 0.0],
-    ResourcesPath: "../public/live2d/chun.model3.json",
-    //这是你自己的live2d资源文件，相对路径引用即可
-    CanvasSize: {
-      height: 400,
-      width: 200,
-    },
-    CanvasPosition: "left",
-    ShowToolBox: true,
+// async function init2() {
+//   await live2d.initializeLive2D({
+//     BackgroundRGBA: [0.0, 0.0, 0.0, 0.0],
+//     ResourcesPath: "../public/live2d/chun.model3.json",
+//     //这是你自己的live2d资源文件，相对路径引用即可
+//     CanvasSize: {
+//       height: 400,
+//       width: 200,
+//     },
+//     CanvasPosition: "left",
+//     ShowToolBox: true,
 
-    // 是否使用 indexDB 进行缓存优化，这样下一次载入就不会再发起网络请求了
-    LoadFromCache: true,
-  });
-}
+//     // 是否使用 indexDB 进行缓存优化，这样下一次载入就不会再发起网络请求了
+//     LoadFromCache: true,
+//   });
+// }
 onMounted(() => {
   // 检测是否为移动端
   const isMobile = window.innerWidth <= 768;
@@ -57,7 +57,7 @@ onMounted(() => {
   }, 5000); // 播放动画 4 秒后进入主页
 
   if (!isMobile) {
-    init2()
+    // init2()
   }
 });
 

@@ -25,7 +25,7 @@
           <div class="score">得分 <span class="num">{{ score }}</span></div>
           <div class="best">记录 <span class="num">{{ bestScore }}</span></div>
           <div class="info-small">长度 <strong>{{ snake.length }}</strong></div>
-          <div class="info-small">速度 <strong>{{ Math.round(currentSpeed * 10) / 10 }}</strong> cells/s</div>
+          <div class="info-small">速度 <strong>{{ Math.round(currentSpeed * 10) / 10 }}</strong> 格/秒</div>
         </div>
 
         <div class="info">
@@ -44,8 +44,8 @@
         <div class="panel card">
           <h3>说明</h3>
           <ul>
-            <li>吃到小花瓣增长并得分；吃到大食物分值更高（大食物存在时间有限并临近消失会闪烁）。</li>
-            <li>每吃 3 个小食物后，有概率生成一次大食物。</li>
+            <li>吃到小花瓣增长并得分；吃到阿漂分值更高（阿漂存在时间有限并临近消失会闪烁）。</li>
+            <li>每吃 3 个小花瓣后，有概率生成一次阿漂。</li>
             <li>环绕模式穿墙不死，但食物得分会下降（折扣）。</li>
           </ul>
         </div>
@@ -54,7 +54,11 @@
           <h3>排行榜</h3>
 
           <div class="ranking-actions">
-            <button class="btn small" @click="uploadScore()">上传当前分数</button>
+            <label class="nick-wrap" aria-label="上传昵称">
+              <input v-model="uploaderNick" @keydown.enter.prevent="uploadScore" type="text" maxlength="32"
+                placeholder="输入昵称" aria-placeholder="昵称" class="nick-input" />
+            </label>
+            <button class="btn small" @click="uploadScore()" :disabled="!gameOver">上传当前模式最高记录</button>
             <button class="btn small ghost" @click="openRankingModal(true)">查看环绕榜</button>
             <button class="btn small ghost" @click="openRankingModal(false)">查看边界榜</button>
           </div>
@@ -63,31 +67,31 @@
         </div>
 
         <!-- 排行榜弹窗（放在组件末尾模板处） -->
-        <teleport to="body">
-          <div v-if="rankingModal.visible" class="ranking-modal-overlay" @click.self="closeRankingModal">
-            <div class="ranking-modal card" role="dialog" aria-modal="true" :aria-label="rankingModal.title">
-              <header class="rm-head">
-                <h3>{{ rankingModal.title }}</h3>
-                <div class="rm-actions">
-                  <button class="btn ghost small" @click="fetchRanking()">刷新</button>
-                  <button class="btn small" @click="closeRankingModal">关闭</button>
-                </div>
-              </header>
 
-              <div class="rm-body">
-                <p v-if="rankingLoading" class="muted">加载中…</p>
-                <ol v-else class="ranking-list">
-                  <li v-for="(it, idx) in rankingData" :key="it.id || idx">
-                    <span class="rank">{{ idx + 1 }}</span>
-                    <span class="nick">{{ it.nickname || '匿名' }}</span>
-                    <span class="score">{{ it.count ?? it.score ?? 0 }}</span>
-                  </li>
-                </ol>
-                <p v-if="!rankingLoading && rankingData.length === 0" class="muted">暂无榜单数据。</p>
+        <div v-if="rankingModal.visible" class="ranking-modal-overlay" @click.self="closeRankingModal">
+          <div class="ranking-modal card" role="dialog" aria-modal="true" :aria-label="rankingModal.title">
+            <header class="rm-head">
+              <h3>{{ rankingModal.title }}</h3>
+              <div class="rm-actions">
+
+                <button class="btn small" @click="closeRankingModal">x</button>
               </div>
+            </header>
+
+            <div class="rm-body">
+              <p v-if="rankingLoading" class="muted">加载中…</p>
+              <ol v-else class="ranking-list">
+                <li v-for="(it, idx) in rankingData" :key="it.id || idx">
+                  <span class="rank">{{ idx + 1 }}</span>
+                  <span class="nick">{{ it.nickname || '匿名' }}</span>
+                  <span class="score">{{ it.count ?? it.score ?? 0 }}</span>
+                </li>
+              </ol>
+              <p v-if="!rankingLoading && rankingData.length === 0" class="muted">暂无榜单数据。</p>
             </div>
           </div>
-        </teleport>
+        </div>
+
 
       </aside>
     </main>
@@ -209,6 +213,7 @@ function openRankingModal(isWrap: boolean) {
   rankingModal.value.title = isWrap ? "环绕模式榜单" : "边界模式榜单";
   console.log('res', rankingModal.value.title)
   rankingModal.value.visible = true;
+  console.log('res', rankingModal.value.visible)
   fetchRanking();
 }
 function closeRankingModal() {
@@ -238,7 +243,8 @@ async function fetchRanking() {
     rankingLoading.value = false;
   }
 }
-
+const uploaderNick = ref<string>(localStorage.getItem('chun_uploader_nick') || '');
+const uploading = ref(false);
 // 上传当前分数（会提示昵称），上传后刷新对应榜单
 async function uploadScore() {
   // 如果没有分数或为 0，提示并返回
@@ -247,18 +253,21 @@ async function uploadScore() {
     return;
   }
 
+  if (!uploaderNick.value.trim()) {
+    alert('请输入昵称');
+    return;
+  }
+  if (uploading.value) return;
+  uploading.value = true;
   // 选择模式（使用当前 wrapMode 状态作为目标）
   const isWrap = Boolean(wrapMode.value);
 
-  // 简单输入昵称（你也可以换成自定义 modal）
-  let nick = window.prompt('请输入要展示的昵称（留空将使用 匿名）', '');
-  if (nick === null) return; // 用户取消
-  nick = (nick || '匿名').slice(0, 32); // 限长
+
 
   // post payload：{ character_key, nickname, count }
   const payload = {
     character_key: charKeyForMode(isWrap),
-    nickname: nick,
+    nickname: uploaderNick.value,
     count: bestScore.value
   };
 
@@ -275,6 +284,7 @@ async function uploadScore() {
     console.error('上传失败', e);
     alert('上传失败，请稍后再试。');
   } finally {
+    uploading.value = false;
     // 如果对应榜单弹窗打开且为当前模式，刷新；否则不自动打开（避免打扰）
     if (rankingModal.value.visible && rankingModal.value.isWrap === isWrap) {
       fetchRanking();
@@ -871,21 +881,143 @@ $muted: #7b5b5f;
     }
 
     /* 排行弹窗与按钮样式 */
+    /* 红椿风格：排行榜面板 & 按钮 */
+    /* 红椿风格：排行榜面板 & 按钮（写死颜色）*/
     .ranking-panel {
-      .ranking-actions {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 8px;
+      position: relative;
+      padding: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      /* 背景：淡红到白的柔和渐变 */
+      background: linear-gradient(180deg, rgba(#ffd7db, 0.95), rgba(255, 248, 249, 0.94));
+      border: 1px solid rgba(#9e1820, 0.12);
+      box-shadow: 0 12px 36px rgba(#9e1820, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+      /* 右上花瓣装饰（装饰性、无交互） */
+      &::before {
+        content: "";
+        position: absolute;
+        right: -28px;
+        top: -18px;
+        width: 140px;
+        height: 140px;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 30% 28%, rgba(#d94e60, 0.12), transparent 18%),
+          radial-gradient(circle at 70% 72%, rgba(#9e1820, 0.06), transparent 35%);
+        transform: rotate(14deg);
+        filter: blur(6px);
+        opacity: 0.95;
       }
 
-      .btn.small {
-        padding: 6px 10px;
-        font-size: 0.9rem;
-        border-radius: 8px;
+      h3 {
+        margin: 0 0 10px 0;
+        color: #9e1820;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
+
+      .ranking-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+
+      .nick-wrap {
+        flex: 1 1 200px;
+        min-width: 140px;
+        max-width: 360px;
+      }
+
+      .nick-input {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(158, 24, 32, 0.08);
+        background: linear-gradient(180deg, #fff, #fff8f9);
+        box-shadow: inset 0 -4px 10px rgba(217, 78, 96, 0.03);
+        font-size: 0.94rem;
+        color: #3b2b2f;
+        outline: none;
+        transition: box-shadow 160ms ease, transform 120ms;
+
+        &::placeholder {
+          color: #bba0a6;
+        }
+
+        &:focus {
+          box-shadow: 0 8px 30px rgba(217, 78, 96, 0.10);
+          transform: translateY(-2px);
+        }
+      }
+
+      /* 按钮：胶囊形，主按钮为暖红渐变，ghost 为玻璃感边框 */
+      .btn.small {
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        cursor: pointer;
+        transition: transform 180ms cubic-bezier(.2, .9, .2, 1), box-shadow 200ms ease, background 200ms ease;
+        user-select: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        /* 主按钮（上传等）*/
+        &:not(.ghost) {
+          color: #ffffff;
+          background: linear-gradient(90deg, #d94e60 0%, #9e1820 100%);
+          box-shadow: 0 10px 30px rgba(#9e1820, 0.12), 0 0 28px rgba(#d94e60, 0.04);
+        }
+
+        /* ghost 风格（次要操作）*/
+        &.ghost {
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 250, 250, 0.6));
+          border: 1px solid rgba(#9e1820, 0.12);
+          color: #9e1820;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        &:hover {
+          transform: translateY(-4px);
+
+          &:not(.ghost) {
+            box-shadow: 0 18px 46px rgba(#9e1820, 0.18), 0 0 30px rgba(#d94e60, 0.06);
+          }
+
+          &.ghost {
+            background: linear-gradient(90deg, rgba(#d94e60, 0.06), rgba(#9e1820, 0.04));
+          }
+        }
+
+        &:active {
+          transform: translateY(-1px) scale(0.997);
+        }
+
+        &:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 6px rgba(#d94e60, 0.12);
+        }
+      }
+
+      /* 提示文字（颜色偏暖）*/
+      .muted {
+        color: #b86a74;
+        /* 人物风格的暖灰/淡红色 */
+        font-size: 0.9rem;
+      }
+
     }
 
     /* 弹窗覆盖层 */
+    /* 红椿风格：排行榜弹窗（写死颜色、嵌套） */
     .ranking-modal-overlay {
       position: fixed;
       inset: 0;
@@ -894,22 +1026,53 @@ $muted: #7b5b5f;
       align-items: center;
       justify-content: center;
       z-index: 6000;
+      padding: 20px;
 
       .ranking-modal {
-        width: min(720px, 92vw);
-        max-height: 82vh;
-        overflow: auto;
-        padding: 12px;
-        border-radius: 12px;
+        width: min(720px, 94vw);
+        max-height: 86vh;
+        overflow-x: auto;
+        padding: 18px;
+        border-radius: 14px;
+        position: relative;
 
+        /* 背景与边框：柔和的红白渐变 + 细腻边框与阴影 */
+        background: linear-gradient(180deg, #fff6f7 0%, #fff1f3 48%, #fff0f2 100%);
+        border: 1px solid rgba(158, 24, 32, 0.06);
+        box-shadow: 0 18px 46px rgba(158, 24, 32, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+
+
+        /* 标题区 */
         .rm-head {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 12px;
+          gap: 12px;
+
+          h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 900;
+            /* 渐变文字（椿的主色调）*/
+            background: linear-gradient(90deg, #fff0f2 0%, #ff6a7a 45%, #7a1116 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+          }
+
+          .rm-actions {
+            display: flex;
+            gap: 8px;
+          }
         }
 
         .rm-body {
+          /* 榜单容器内侧背景（轻微纸纹感）*/
+          padding: 6px 2px 10px 2px;
+
           .ranking-list {
             list-style: none;
             padding: 0;
@@ -919,32 +1082,89 @@ $muted: #7b5b5f;
               display: flex;
               align-items: center;
               gap: 12px;
-              padding: 8px 6px;
-              border-bottom: 1px dashed rgba(200, 200, 200, 0.08);
+              padding: 10px 8px;
+              border-radius: 10px;
+              transition: background 180ms ease, transform 160ms ease, box-shadow 160ms ease;
+              /* 微微分隔线替代，确保在深/浅主题时都好看 */
+              background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 249, 0.98));
+              border: 1px solid rgba(220, 212, 214, 0.6);
+              margin-bottom: 8px;
+
+              &:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 28px rgba(158, 24, 32, 0.06);
+                background: linear-gradient(180deg, rgba(255, 241, 244, 0.98), rgba(255, 247, 248, 0.98));
+              }
+
+              &:focus-within,
+              &:focus {
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(217, 78, 96, 0.08);
+              }
 
               .rank {
-                width: 34px;
-                text-align: center;
-                font-weight: 800;
-                color: $red-mid;
+                width: 44px;
+                height: 44px;
+                display: inline-grid;
+                place-items: center;
+                font-weight: 900;
+                border-radius: 10px;
+                font-size: 0.95rem;
+                color: #fff;
+                /* 默认徽章为柔和粉红 */
+                background: linear-gradient(135deg, #ffd7db 0%, #ff99a9 100%);
+                box-shadow: 0 6px 18px rgba(158, 24, 32, 0.06);
               }
 
               .nick {
                 flex: 1;
-                font-weight: 700;
+                font-weight: 800;
                 color: #3b2b2f;
               }
 
               .score {
-                width: 80px;
+                width: 90px;
                 text-align: right;
-                font-weight: 800;
-                color: $red-deep;
+                font-weight: 900;
+                color: #9e1820;
+                font-size: 0.98rem;
               }
             }
+
+            /* li end */
+
+            /* 前三名更强的视觉强调 */
+            li:nth-child(1) .rank {
+              background: linear-gradient(135deg, #ff9aa6 0%, #d94e60 60%, #9e1820 100%);
+              box-shadow: 0 8px 30px rgba(217, 78, 96, 0.14);
+            }
+
+            li:nth-child(2) .rank {
+              background: linear-gradient(135deg, #ffd4d8 0%, #ff8b9a 60%, #d14b57 100%);
+              box-shadow: 0 6px 22px rgba(209, 75, 87, 0.10);
+            }
+
+            li:nth-child(3) .rank {
+              background: linear-gradient(135deg, #ffe6e8 0%, #ffb3bd 60%, #d67a84 100%);
+              box-shadow: 0 5px 18px rgba(214, 122, 132, 0.08);
+            }
+          }
+
+          /* ranking-list end */
+
+          /* 空状态 / 加载文字 */
+          .muted {
+            color: #b86a74;
+            font-size: 0.95rem;
+            padding: 12px 6px;
           }
         }
+
       }
+
+
+
+
     }
 
   }
@@ -969,7 +1189,7 @@ $muted: #7b5b5f;
 
       .right-panel {
         order: 3;
-        display: none;
+
       }
     }
 
