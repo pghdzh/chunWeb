@@ -23,12 +23,7 @@
             </div>
           </button>
 
-          <!-- 小摘要卡（移动端显示） -->
-          <div class="mini-lead" aria-hidden="false">
-            <p>
-              自由随性，自有一种危险的吸引力。她相信命运的牵系，且乐意顺着它游走世间。
-            </p>
-          </div>
+       
         </div>
 
         <div class="right-col" ref="metaCard">
@@ -383,14 +378,6 @@ onMounted(() => {
     font-weight: 600;
   }
 
-  /* 小摘要（移动端在头像下方显示） */
-  .mini-lead {
-    display: none;
-    margin-top: 8px;
-    font-size: 0.95rem;
-    color: #5b6165;
-    max-width: 280px;
-  }
 
   .right-col {
     display: flex;
@@ -675,10 +662,7 @@ onMounted(() => {
     border-radius: 10px;
   }
 
-  .hero .mini-lead {
-    display: block;
-    color: #5b6165;
-  }
+
 
   .hero .hero-decor {
     display: none;
