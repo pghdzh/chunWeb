@@ -5,7 +5,7 @@
         <video class="video-background" :src="videoSrc" autoplay muted loop playsinline></video>
         <div class="intro-content">
           <h1 class="welcome-text">欢迎进入</h1>
-          <h2 class="title">椿电子设定集</h2>
+          <h2 class="title">一朵椿花的记忆</h2>
         </div>
       </div>
     </transition>

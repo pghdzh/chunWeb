@@ -9,9 +9,20 @@
         </button>
       </div>
       <div class="gallery-grid">
-        <div v-for="(img, index) in images" :key="img.id" class="card" @click="openLightbox(index)" ref="cards">
+        <div
+          v-for="(img, index) in images"
+          :key="img.id"
+          class="card"
+          @click="openLightbox(index)"
+          ref="cards"
+        >
           <div class="card-inner">
-            <img :src="img.src" :alt="img.alt" loading="lazy" @load="onImageLoad($event)" />
+            <img
+              :src="img.src"
+              :alt="img.alt"
+              loading="lazy"
+              @load="onImageLoad($event)"
+            />
             <div class="overlay">
               <span>查看大图</span>
             </div>
@@ -31,11 +42,17 @@
     <aside class="ranking-panel">
       <div class="panel-header" @click="expanded = !expanded">
         <h3 class="ranking-title">上传排行榜</h3>
-        <span class="toggle-icon">{{ expanded ? "收起▾" : "展开▸" }}</span>
+        <span>共{{ images.length }}张</span>
+        <span class="toggle-icon">{{ expanded ? "▾" : "▸" }}</span>
       </div>
       <transition name="fade">
         <ul v-if="expanded" class="ranking-list">
-          <li v-for="(item, idx) in rankingList" :key="idx" class="ranking-item" :class="`rank-${idx + 1}`">
+          <li
+            v-for="(item, idx) in rankingList"
+            :key="idx"
+            class="ranking-item"
+            :class="`rank-${idx + 1}`"
+          >
             <span class="rank">{{ idx + 1 }}</span>
             <span class="name">{{ item.nickname }}</span>
             <span class="count">{{ item.count }} 张</span>
@@ -52,14 +69,16 @@
     </div>
 
     <!-- 上传弹窗 -->
-    <div v-if="uploadModalOpen" class="upload-modal-overlay" @click.self="closeUploadModal">
+    <div
+      v-if="uploadModalOpen"
+      class="upload-modal-overlay"
+      @click.self="closeUploadModal"
+    >
       <div class="upload-modal">
         <h3>批量上传图片</h3>
         <div class="tip-container">
           <ul class="tips-list">
-            <li>
-              审核规则：1.不要 AI 图 2.不要色情倾向 3.要我能认出是椿。
-            </li>
+            <li>审核规则：1.不要色情倾向（露三点）我怕被封 2.要我能认出是椿。</li>
             <li>
               由于没有用户系统，我这边不好做审核反馈，但只要显示上传成功，我这边肯定能收到。
             </li>
@@ -81,7 +100,13 @@
         </label>
         <label>
           选择图片（最多 {{ remaining }} 张）：
-          <input ref="fileInput" type="file" multiple accept="image/*" @change="handleFileSelect" />
+          <input
+            ref="fileInput"
+            type="file"
+            multiple
+            accept="image/*"
+            @change="handleFileSelect"
+          />
         </label>
         <p class="tip" v-if="selectedFiles.length">
           已选 {{ selectedFiles.length }} 张
@@ -538,800 +563,782 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-$bg: #0d0d0d;
-$accent: #d14b4b;
-$text: #fde8e8;
-$highlight: #ffd700;
-$ice-blue: #bff7ff;
-$neon-pink: #ff66c4;
-@use "sass:color";
+// 椿的主题色系
+$camellia-white: #f8f5f2;
+$camellia-cream: #fff5f0;
+$camellia-red: #d32f2f;
+$camellia-dark-red: #8b0000;
+$camellia-light-red: #ff6b6b;
+$blood-crimson: #c62828;
+$deep-shadow: #1a0f0f;
+$vein-purple: #6a1b9a;
+$gold-glow: #ffd54f;
+
+// 辅助色
+$shadow-soft: rgba(26, 15, 15, 0.08);
+$shadow-medium: rgba(26, 15, 15, 0.16);
+$shadow-heavy: rgba(26, 15, 15, 0.32);
+$glass-white: rgba(248, 245, 242, 0.92);
+$glass-red: rgba(211, 47, 47, 0.12);
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.floating-chibis {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
+@keyframes petalFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
 }
 
-.chibi-img {
-  position: absolute;
-  width: 80px;
-  user-select: none;
-  transform-origin: center center;
-  pointer-events: auto;
-  position: absolute;
-  z-index: 10;
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .gallery-container {
-  background: radial-gradient(circle at center, #111 0%, $bg 100%);
-  color: $text;
+  background: linear-gradient(135deg, $camellia-cream 0%, $camellia-white 100%);
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding: 0 16px 120px;
+  position: relative;
+  overflow-x: hidden;
 
-  .section {
-    padding: 80px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(
+        circle at 20% 80%,
+        rgba($camellia-light-red, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba($vein-purple, 0.03) 0%,
+        transparent 50%
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
 
-    .sort-controls {
-      margin: 16px 0;
+.upload-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "PingFang SC", "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  color: $camellia-white;
+  background: linear-gradient(135deg, $camellia-red 0%, $blood-crimson 100%);
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 8px 32px rgba($blood-crimson, 0.25),
+    0 2px 8px rgba($blood-crimson, 0.15),
+    inset 0 1px 0 rgba($camellia-white, 0.3);
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
 
-      .sort-btn {
-        /* 基础布局（保留左侧装饰空间） */
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 28px 10px 56px;
-        /* 左侧留足装饰空间 */
-        font-size: 1rem;
-        line-height: 1;
-        font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
-          sans-serif;
-        cursor: pointer;
-        border-radius: 28px;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(158, 24, 32, 0.08);
+  &:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 12px 40px rgba($blood-crimson, 0.35),
+      0 4px 16px rgba($blood-crimson, 0.2),
+      inset 0 1px 0 rgba($camellia-white, 0.4);
+    background: linear-gradient(
+      135deg,
+      $camellia-light-red 0%,
+      $camellia-red 100%
+    );
+  }
 
-        /* 红椿渐变与文字色（写死） */
-        background: linear-gradient(90deg,
-            #ffdfdf 0%,
-            #ff7b90 50%,
-            #9e1820 100%);
-        color: #3b1618;
-        /* 暗红/棕，保证可读 */
-        box-shadow: 0 8px 20px rgba(158, 24, 32, 0.06),
-          inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  &:active {
+    transform: translateX(-50%) translateY(0);
+  }
+}
 
-        transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.25, 1),
-          box-shadow 0.22s ease, background 0.28s ease, color 0.18s;
+.gallery {
+  padding-top: 88px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-        /* 在徽章中心叠加一个小花瓣形状（简化） */
-        &::after {
-          content: "";
-          position: absolute;
-          left: 22px;
-          top: 50%;
-          transform: translate(-50%, -52%) rotate(-12deg);
-          width: 18px;
-          height: 18px;
-          background: radial-gradient(8px 6px at 30% 30%,
-              rgba(255, 255, 255, 0.9),
-              transparent 35%),
-            linear-gradient(180deg,
-              rgba(255, 122, 134, 0.95),
-              rgba(158, 24, 32, 0.95));
-          clip-path: polygon(50% 0%, 68% 24%, 50% 100%, 32% 24%);
-          border-radius: 4px;
-          box-shadow: 0 2px 6px rgba(158, 24, 32, 0.12);
-          pointer-events: none;
-          z-index: 3;
-          transition: transform 220ms ease, opacity 220ms ease;
-        }
+.sort-controls {
+  margin-bottom: 24px;
+  text-align: center;
 
-        /* hover：微抬起，颜色加深，高光出现 */
-        &:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 14px 36px rgba(158, 24, 32, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.5);
-          background: linear-gradient(90deg,
-              #ffd6da 0%,
-              #ff6a82 50%,
-              #8b141c 100%);
-          color: #ffffff;
-        }
+  .sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: $camellia-dark-red;
+    background: $camellia-white;
+    border: 2px solid rgba($camellia-red, 0.15);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 
-        &:hover::after {
-          transform: translate(-50%, -60%) rotate(-6deg) scale(1.02);
-          opacity: 1;
-        }
-      }
+    &:hover {
+      border-color: $camellia-red;
+      background: rgba($camellia-red, 0.05);
+      box-shadow: 0 4px 20px rgba($camellia-red, 0.1);
     }
 
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
+    &::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(135deg, $camellia-red, $blood-crimson);
+      border-radius: 50%;
+    }
+  }
+}
 
-      .card {
-        perspective: 1000px;
-        opacity: 0;
-        transform: translateY(20px);
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 8px;
 
-        &.visible {
-          animation: fadeInUp 0.6s ease forwards;
-        }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
 
-        &.loaded {
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
 
-          // Blur-up & grayscale removed
-          .card-inner img {
-            filter: none;
-            opacity: 1;
-          }
-        }
+.card {
+  aspect-ratio: 3/4;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: transform 0.4s ease, opacity 0.4s ease;
 
-        .card-inner {
-          position: relative;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
-          transform-style: preserve-3d;
-          transition: transform 0.5s ease, box-shadow 0.5s ease;
+  &.visible {
+    animation: fadeInUp 0.6s ease forwards;
+  }
 
-          &:hover {
-            transform: rotateY(6deg) rotateX(3deg) scale(1.05);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.9);
-          }
+  &:hover {
+    transform: translateY(-8px);
 
-          img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            filter: blur(20px) grayscale(100%);
-            opacity: 0.6;
-            transition: filter 0.6s ease, opacity 0.6s ease;
-          }
+    .card-inner::after {
+      opacity: 1;
+    }
 
-          .overlay {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 12px 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.4s;
+    .overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-            span {
-              color: $text;
-              font-family: "Cinzel Decorative", serif;
-              font-size: 1.1rem;
-              letter-spacing: 1px;
-              background: rgba(0, 0, 0, 0.6);
-              padding: 4px 12px;
-              border-radius: 20px;
-            }
-          }
+    .like-btn {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
 
-          &:hover .overlay {
-            opacity: 1;
-          }
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
 
-          .like-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px;
-            border-radius: 50%;
-            transition: transform 0.2s ease;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba($deep-shadow, 0.6) 0%,
+      rgba($deep-shadow, 0.2) 30%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
-            &:hover {
-              transform: scale(1.3);
-            }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
 
-            .heart {
-              width: 24px;
-              height: 24px;
-              background: url("/icons/heart-red-outline.svg") no-repeat center;
-              background-size: contain;
-              transition: all 0.3s ease;
-              filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.7));
-            }
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 16px 16px;
+  background: linear-gradient(to top, rgba($deep-shadow, 0.8), transparent);
+  color: $camellia-white;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 2;
 
-            .liked {
-              background: url("/icons/heart-red-filled.svg") no-repeat center;
-              background-size: contain;
-              animation: pop 0.4s ease;
+  span {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+  }
+}
 
-              /* 持续呼吸光效 */
-              &::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 40px;
-                height: 40px;
-                background: rgba(255, 0, 0, 0.3);
-                border-radius: 50%;
-                transform: translate(-50%, -50%) scale(0);
-                animation: pulse 1.2s ease-out infinite;
-                pointer-events: none;
-              }
-            }
+.like-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba($deep-shadow, 0.7);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 20px;
+  color: $camellia-white;
+  cursor: pointer;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 3;
 
-            .like-count {
-              font-size: 1rem;
-              color: #ff4b4b;
-              text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-              font-weight: bold;
-            }
-          }
+  &:hover {
+    background: rgba($blood-crimson, 0.8);
+    animation: heartbeat 0.4s ease;
+  }
 
-          @keyframes pulse {
-            0% {
-              transform: translate(-50%, -50%) scale(0.6);
-              opacity: 0.6;
-            }
-
-            50% {
-              transform: translate(-50%, -50%) scale(1.2);
-              opacity: 0;
-            }
-
-            100% {
-              transform: translate(-50%, -50%) scale(0.6);
-              opacity: 0;
-            }
-          }
-        }
-      }
+  .heart {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    background: url("/icons/heart-red-outline.svg") no-repeat center;
+    background-size: contain;
+    &.liked {
+      background: url("/icons/heart-red-filled.svg") no-repeat center;
+      animation: heartbeat 0.6s ease;
     }
   }
 
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.95);
+  .like-count {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.sentinel {
+  height: 20px;
+  margin: 40px 0;
+}
+
+.loading,
+.finished {
+  text-align: center;
+  padding: 24px;
+  color: $camellia-dark-red;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.ranking-panel {
+  position: fixed;
+  top: 88px;
+  right: 16px;
+  width: 260px;
+  background: $glass-white;
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba($camellia-red, 0.1);
+  box-shadow: 0 12px 40px rgba($deep-shadow, 0.08),
+    0 4px 16px rgba($deep-shadow, 0.04);
+  z-index: 100;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    position: static;
+    width: 100%;
+    margin: 32px auto;
+    max-width: 480px;
+  }
+}
+
+.panel-header {
+  padding: 20px 24px;
+  background: linear-gradient(
+    135deg,
+    rgba($camellia-red, 0.1),
+    rgba($vein-purple, 0.05)
+  );
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba($camellia-red, 0.1);
+
+  .ranking-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $camellia-dark-red;
+    letter-spacing: 0.5px;
+  }
+
+  .toggle-icon {
+    color: $camellia-red;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+}
+
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba($camellia-red, 0.05);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($camellia-red, 0.2);
+    border-radius: 3px;
+  }
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: rgba($camellia-white, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba($camellia-red, 0.08);
+  transition: all 0.3s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    transform: translateX(4px);
+    background: $camellia-white;
+    border-color: rgba($camellia-red, 0.15);
+    box-shadow: 0 4px 16px rgba($camellia-red, 0.1);
+  }
+
+  &.rank-1 {
+    background: linear-gradient(
+      135deg,
+      rgba($gold-glow, 0.15),
+      rgba($camellia-red, 0.1)
+    );
+    border-color: rgba($gold-glow, 0.3);
+
+    .rank {
+      color: $camellia-red;
+      text-shadow: 0 2px 4px rgba($gold-glow, 0.3);
+    }
+  }
+
+  &.rank-2 {
+    background: linear-gradient(
+      135deg,
+      rgba($camellia-red, 0.1),
+      rgba($vein-purple, 0.05)
+    );
+    border-color: rgba($camellia-red, 0.2);
+  }
+
+  &.rank-3 {
+    background: linear-gradient(
+      135deg,
+      rgba($camellia-light-red, 0.08),
+      rgba($camellia-red, 0.05)
+    );
+    border-color: rgba($camellia-light-red, 0.15);
+  }
+}
+
+.rank {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($camellia-red, 0.1);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: $camellia-red;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  margin: 0 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: $deep-shadow;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $camellia-red;
+  white-space: nowrap;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba($deep-shadow, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba($deep-shadow, 0.5);
+    animation: fadeInUp 0.4s ease;
+  }
+
+  .close,
+  .prev,
+  .next {
+    position: absolute;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    color: $camellia-white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: rgba($camellia-red, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 50%;
+    transition: all 0.3s ease;
 
-    img {
-      max-width: 85%;
-      max-height: 85%;
-      border: 3px solid $accent;
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
-      animation: fadeInUp 0.4s ease;
+    &:hover {
+      background: $camellia-red;
+      transform: scale(1.1);
+    }
+  }
+
+  .close {
+    top: 24px;
+    right: 24px;
+  }
+
+  .prev,
+  .next {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .prev {
+    left: 24px;
+  }
+
+  .next {
+    right: 24px;
+  }
+}
+
+.upload-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba($deep-shadow, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+
+  @media (max-width: 768px) {
+    align-items: flex-end;
+    padding: 0;
+  }
+}
+
+.upload-modal {
+  background: $camellia-white;
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 80px rgba($deep-shadow, 0.2),
+    0 8px 32px rgba($deep-shadow, 0.1);
+
+  @media (max-width: 768px) {
+    border-radius: 24px 24px 0 0;
+    max-height: 80vh;
+    padding: 24px;
+  }
+
+  h3 {
+    margin: 0 0 24px;
+    color: $camellia-dark-red;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+.tip-container {
+  background: rgba($camellia-cream, 0.8);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border-left: 4px solid $camellia-red;
+
+  .tips-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      padding: 6px 0 6px 24px;
+      color: $camellia-dark-red;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      position: relative;
+
+      &::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: $camellia-red;
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+.stats {
+  text-align: center;
+  margin: 0 0 24px;
+  color: $camellia-dark-red;
+  font-size: 1rem;
+
+  strong {
+    color: $camellia-red;
+    font-weight: 700;
+  }
+}
+
+label {
+  display: block;
+  margin-bottom: 20px;
+  color: $deep-shadow;
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  input[type="text"],
+  input[type="file"] {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px 16px;
+    border: 2px solid rgba($camellia-red, 0.1);
+    border-radius: 12px;
+    background: $camellia-white;
+    color: $deep-shadow;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $camellia-red;
+      box-shadow: 0 0 0 3px rgba($camellia-red, 0.1);
     }
 
-    .close,
-    .prev,
-    .next {
-      position: absolute;
-      color: $text;
-      font-size: 2.5rem;
-      cursor: pointer;
-      user-select: none;
-      padding: 8px;
-      background: rgba(27, 27, 27, 0.8);
-      border-radius: 50%;
-      transition: background 0.3s;
+    &::placeholder {
+      color: rgba($deep-shadow, 0.5);
+    }
+  }
+}
 
-      &:hover {
-        background: $accent;
+.tip {
+  text-align: center;
+  margin: 12px 0 24px;
+  color: $camellia-red;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+
+  button {
+    flex: 1;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:not(.cancel) {
+      background: linear-gradient(135deg, $camellia-red, $blood-crimson);
+      color: $camellia-white;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba($blood-crimson, 0.3);
       }
     }
 
-    .close {
-      top: 20px;
-      right: 20px;
-    }
+    &.cancel {
+      background: transparent;
+      color: $camellia-red;
+      border: 2px solid rgba($camellia-red, 0.2);
 
-    .prev {
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
+      &:hover {
+        background: rgba($camellia-red, 0.05);
+        border-color: $camellia-red;
+      }
     }
+  }
+}
 
-    .next {
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
+// 移动端适配优化
+@media (max-width: 768px) {
+  .gallery-container {
+    padding: 0 12px 100px;
+  }
+
+  .gallery {
+    padding-top: 72px;
   }
 
   .upload-btn {
-    /* 位置与布局保持不变 */
-    position: fixed;
-    bottom: 64px;
-    left: 24px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 18px;
-    font-size: 1rem;
-    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
-      sans-serif;
-    z-index: 10;
-    cursor: pointer;
-    user-select: none;
-
-    /* 文本与主渐变（红椿专用） */
-    color: #ffffff;
-    background: linear-gradient(90deg, #ffb3b9 0%, #ff4f4f 55%, #9e1820 100%);
-    border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-
-    /* 阴影（柔和 + 椿色光晕） */
-    box-shadow: 0 14px 36px rgba(184, 58, 74, 0.12),
-      /* 主体柔和投影（暖红） */
-      0 0 28px rgba(255, 79, 79, 0.08);
-    /* 霓虹晕光（猩红） */
-
-    overflow: visible;
-    transition: transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1),
-      box-shadow 200ms ease, background 220ms ease;
-
-    /* hover：微抬起、霓虹更强 */
-    &:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 26px 54px rgba(170, 60, 70, 0.16),
-        0 0 36px rgba(255, 79, 79, 0.16);
-    }
+    bottom: 16px;
+    padding: 14px 24px;
+    font-size: 0.95rem;
   }
 
+ 
+  .lightbox {
+    .close,
+    .prev,
+    .next {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
 
-  .upload-modal-overlay {
-    position: fixed;
-    inset: 0;
-    /* 深色底并微带暖红泛光，让弹窗更突出且氛围与椿一致 */
-    background: linear-gradient(180deg,
-        rgba(10, 6, 6, 0.76),
-        rgba(10, 6, 6, 0.58));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    backdrop-filter: blur(8px) saturate(1.06);
+    .close {
+      top: 16px;
+      right: 16px;
+    }
 
-    /* 在 overlay 顶层加一层微弱的红色晕染（视觉氛围） */
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(600px 240px at 50% 30%, rgba(158, 24, 32, 0.06), transparent 15%);
-      mix-blend-mode: screen;
+    .prev {
+      left: 16px;
+    }
+
+    .next {
+      right: 16px;
     }
   }
+}
 
-  /* 弹窗主体（红椿化） */
-  .upload-modal {
-    background: linear-gradient(180deg,
-        rgba(255, 246, 247, 0.98),
-        rgba(255, 240, 241, 0.96));
-    padding: 36px;
-    border-radius: 18px;
-    width: 660px;
-    color: #2b1516;
-    /* 深色文本，保证可读性 */
-    box-shadow:
-      0 28px 80px rgba(150, 26, 34, 0.42),
-      0 8px 28px rgba(190, 90, 110, 0.06);
-    border: 1px solid rgba(158, 24, 32, 0.06);
-    position: relative;
-    font-family: "Helvetica Neue", "Noto Sans SC", "PingFang SC", sans-serif;
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-
-    /* 外发光（霓虹边） */
-    &::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: 20px;
-      background: linear-gradient(90deg,
-          rgba(255, 179, 186, 0.18),
-          rgba(158, 24, 32, 0.12));
-      filter: blur(18px);
-      opacity: 0.95;
-      pointer-events: none;
-      mix-blend-mode: screen;
-    }
-
-    /* 标题 */
-    h3 {
-      margin-bottom: 16px;
-      font-size: 1.6rem;
-      color: #9e1820;
-      /* 椿的深红 */
-      text-align: center;
-      font-weight: 800;
-      letter-spacing: 0.6px;
-      /* 温和的内外发光，突出主题感 */
-      text-shadow:
-        0 2px 10px rgba(158, 24, 32, 0.12),
-        0 0 18px rgba(255, 119, 134, 0.06);
-    }
-
-    .stats {
-      margin: 20px 0;
-      font-size: 1rem;
-      text-align: center;
-
-      strong {
-        color: #b83a4a;
-      }
-    }
-
-    /* tip 区块改为暖粉玻璃并加深左侧强调线 */
-    .tip-container {
-      margin-top: 20px;
-      padding: 14px 18px;
-      background: linear-gradient(180deg,
-          rgba(255, 245, 246, 0.88),
-          rgba(255, 240, 241, 0.86));
-      border-left: 4px solid rgba(158, 24, 32, 0.12);
-      border-radius: 10px;
-      backdrop-filter: blur(4px);
-      color: #2a2a2a;
-
-      .tips-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-
-        li {
-          position: relative;
-          padding-left: 34px;
-          margin-bottom: 10px;
-          font-size: 0.95rem;
-          color: #2a2a2a;
-
-          &::before {
-            content: "";
-            position: absolute;
-            left: 6px;
-            top: 6px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%,
-                #fff7f8 0%,
-                rgba(255, 255, 255, 0.7) 10%,
-                #ff9aa6 38%,
-                #9e1820 100%);
-            box-shadow: 0 4px 10px rgba(158, 24, 32, 0.08);
-          }
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-        }
-      }
-    }
-
-    .tip {
-      margin-top: 10px;
-      text-align: right;
-      font-size: 0.9rem;
-      color: #3a2a2b;
-    }
-
-    /* 表单控件 */
-    label {
-      display: block;
-      margin-bottom: 18px;
-      font-size: 0.95rem;
-      color: #2b2b2b;
-
-      input[type="text"],
-      input[type="file"] {
-        width: 100%;
-        margin-top: 8px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid rgba(180, 140, 145, 0.10);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 247, 0.96));
-        color: #2b1516;
-        font-size: 0.95rem;
-        outline: none;
-        transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
-      }
-
-      input[type="text"]:focus,
-      input[type="file"]:focus {
-        border-color: rgba(255, 123, 144, 0.9);
-        box-shadow:
-          0 8px 26px rgba(184, 58, 74, 0.08),
-          0 2px 8px rgba(255, 160, 170, 0.06);
-        transform: translateY(-1px);
-      }
-    }
-
-    /* 按钮行（主/取消） */
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 14px;
-      margin-top: 28px;
-      flex-wrap: wrap;
-      align-items: center;
-
-      button {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 24px;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 0.95rem;
-        transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.12s;
-        min-width: 96px;
-        color: #fff;
-      }
-
-      /* 主按钮：椿粉 -> 深红 渐变 */
-      button:not(.cancel) {
-        background: linear-gradient(135deg, #ff8aa2 0%, #d94e60 60%, #9e1820 100%);
-        box-shadow:
-          0 12px 36px rgba(184, 58, 74, 0.14),
-          0 4px 18px rgba(158, 24, 32, 0.06);
-      }
-
-      button:not(.cancel):hover:not(:disabled) {
-        transform: translateY(-4px);
-        box-shadow:
-          0 20px 56px rgba(184, 58, 74, 0.2),
-          0 8px 28px rgba(158, 24, 32, 0.08);
-      }
-
-      button:not(.cancel):disabled {
-        background: linear-gradient(135deg, rgba(255, 138, 154, 0.18), rgba(185, 130, 140, 0.18));
-        opacity: 0.6;
-        cursor: not-allowed;
-        box-shadow: none;
-        color: #fff;
-      }
-
-      /* 取消按钮：透明边框风格 */
-      button.cancel {
-        background: transparent;
-        border: 2px solid rgba(158, 24, 32, 0.08);
-        color: #591e22;
-        min-width: 86px;
-      }
-
-      button.cancel:hover {
-        background: rgba(158, 24, 32, 0.04);
-      }
-    }
-
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
+  .card {
+    border-radius: 16px;
+  }
 
-  .ranking-panel {
-    width: 220px;
-    padding: 16px;
-    /* 红椿渐变毛玻璃面板（写死颜色） */
-    background: linear-gradient(160deg,
-        rgba(255, 238, 241, 0.88),
-        rgba(255, 232, 234, 0.84));
-    -webkit-backdrop-filter: blur(10px) saturate(120%);
-    backdrop-filter: blur(10px) saturate(120%);
-    border-radius: 18px;
-    border: 1px solid rgba(158, 24, 32, 0.08);
-    box-shadow: 0 10px 30px rgba(158, 24, 32, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    position: fixed;
-    top: 84px;
+  .like-btn {
+    top: 12px;
     right: 12px;
-    color: #ffffff;
-    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial,
-      sans-serif;
-    z-index: 1200;
-
-    &.collapsed {
-      height: auto;
-      padding-bottom: 8px;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      gap: 8px;
-
-      .ranking-title {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #9e1820;
-        /* 深椿红 */
-        font-family: "Zhi Mang Xing", "STKaiti", serif;
-        margin: 0;
-        /* 轻微外发光，提升质感 */
-        text-shadow: 0 2px 12px rgba(158, 24, 32, 0.08);
-      }
-
-      .toggle-icon {
-        font-size: 1rem;
-        color: #9e1820;
-        user-select: none;
-        background: linear-gradient(180deg,
-            rgba(255, 243, 244, 0.9),
-            rgba(255, 238, 239, 0.8));
-        padding: 6px 8px;
-        border-radius: 8px;
-        border: 1px solid rgba(158, 24, 32, 0.06);
-        box-shadow: 0 6px 14px rgba(158, 24, 32, 0.04);
-      }
-    }
-
-    .ranking-list {
-      list-style: none;
-      padding: 0;
-      margin: 12px 0 0;
-      overflow-y: auto;
-      max-height: 55vh;
-
-      .ranking-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 10px;
-        margin-bottom: 8px;
-        border-radius: 12px;
-        background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.9),
-            rgba(255, 248, 249, 0.95));
-        border: 1px solid rgba(245, 235, 238, 0.7);
-        transition: transform 240ms cubic-bezier(0.2, 0.9, 0.25, 1),
-          background 240ms ease, box-shadow 240ms ease, color 200ms ease;
-       
-
-        &:hover {
-          transform: translateY(-4px);
-          background: linear-gradient(90deg,
-              rgba(255, 240, 242, 0.98),
-              rgba(255, 230, 232, 0.98));
-          box-shadow: 0 10px 30px rgba(158, 24, 32, 0.06);
-        }
-
-        .rank {
-          width: 36px;
-          text-align: center;
-          font-weight: 900;
-          font-size: 1rem;
-          color: #b82d3b;
-          /* 鲜明红 */
-          text-shadow: 0 2px 8px rgba(184, 58, 74, 0.12);
-        }
-
-        .name {
-          flex: 1;
-          padding: 0 8px;
-          font-size: 0.95rem;
-          color: #4b1a20;
-          font-weight: 700;
-          white-space: normal; // 允许换行
-          word-break: break-word; // 长单词/连续字符也能断开
-          line-height: 1.3; // 行高适配换行
-        }
-
-        .count {
-          font-size: 0.9rem;
-          color: #9e1820;
-          font-weight: 800;
-          text-shadow: 0 2px 8px rgba(158, 24, 32, 0.06);
-          min-width: 36px;
-          text-align: right;
-        }
-
-        /* ---- 前三名强化样式 ---- */
-        &.rank-1 {
-          background: linear-gradient(135deg,
-              #ffb3b9 0%,
-              #ff4f4f 60%,
-              #9e1820 100%);
-          color: #fff;
-          box-shadow: 0 10px 36px rgba(158, 24, 32, 0.14),
-            0 0 18px rgba(255, 79, 79, 0.08);
-          border: 1px solid #9e1820;
-
-          .rank {
-            color: #fff;
-            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-          }
-
-          .name {
-            color: #fff;
-          }
-
-          .count {
-            color: #fff;
-          }
-        }
-
-        &.rank-2 {
-          background: linear-gradient(135deg,
-              #ffd6da 0%,
-              #ff7b90 60%,
-              #8b141c 100%);
-          color: #fff;
-          box-shadow: 0 8px 28px rgba(158, 24, 32, 0.12);
-          border: 1px solid #8b141c;
-
-          .rank {
-            color: #fff;
-          }
-
-          .name {
-            color: #fff;
-          }
-
-          .count {
-            color: #fff;
-          }
-        }
-
-        &.rank-3 {
-          background: linear-gradient(135deg,
-              #ffecec 0%,
-              #ff9aa6 60%,
-              #7a1318 100%);
-          color: #fff;
-          box-shadow: 0 6px 22px rgba(158, 24, 32, 0.1);
-          border: 1px solid #7a1318;
-
-          .rank {
-            color: #fff;
-          }
-
-          .name {
-            color: #fff;
-          }
-
-          .count {
-            color: #fff;
-          }
-        }
-      }
-    }
-
-    /* 淡入淡出动画（保留） */
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: opacity 0.28s ease;
-    }
-
-    .fade-enter-from,
-    .fade-leave-to {
-      opacity: 0;
-    }
+    padding: 6px 10px;
   }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .upload-modal {
+    padding: 20px;
+  }
+}
+
+// 淡入淡出动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
 }
 </style>
