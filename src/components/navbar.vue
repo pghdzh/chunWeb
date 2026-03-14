@@ -167,7 +167,7 @@
               </li>
               <li>
                 <a
-                  href="http://slty.site/#/redirector"
+                  href="https://slty.site/#/redirector"
                   target="_blank"
                   rel="noopener"
                   class="mobile-link external"
@@ -209,7 +209,7 @@ import { io } from "socket.io-client";
 
 const siteId = "chun";
 const onlineCount = ref<number | null>(null);
-const socket = io("http://36.150.237.25:3000", { query: { siteId } });
+const socket = io(import.meta.env.VITE_API_BASE_URL, { query: { siteId } });
 
 const mobileOpen = ref(false);
 const dropdownOpen = ref(false);
