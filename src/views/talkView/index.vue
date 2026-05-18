@@ -427,7 +427,7 @@ async function sendMessage() {
       chatLog.value.push({
         id: Date.now() + 2,
         role: "bot",
-        text: "API余额耗尽了，去b站提醒我充钱吧",
+        text: "可能是API余额耗尽或者到达对话上限了，清空试试还不行的话就b站联系我吧",
         isError: true,
       });
     } else {

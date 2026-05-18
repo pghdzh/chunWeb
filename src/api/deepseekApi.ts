@@ -1,7 +1,7 @@
 // 更新前端调用
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL+'/api/deepseek';
+const API_BASE = import.meta.env.VITE_API_BASE_URL + "/api/deepseek";
 interface ChatMsg {
   id: number;
   role: "user" | "bot";
@@ -12,12 +12,14 @@ interface ChatMsg {
 export async function sendMessageToHui(
   inputMessage: string,
   history: ChatMsg[],
-  character: string = "chun",
+  character: string = "chun"
 ): Promise<string> {
   try {
+    const MAX_HISTORY_ITEMS = 50;
+    const trimmedHistory = history.slice(-MAX_HISTORY_ITEMS);
     const response = await axios.post(`${API_BASE}/chat`, {
       inputMessage,
-      history,
+      history: trimmedHistory,
       character,
     });
 
